@@ -8,5 +8,5 @@ setup(name='CircMod',
       license="GPL-3",
       author='Ludvig Blomkvist',
       author_email='me@ludblom.net',
-      packages=find_packages(include=[])
+      packages=find_packages(include=['sagemath'])
       )

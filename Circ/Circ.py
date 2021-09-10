@@ -9,5 +9,3 @@ class Circ(Matrix):
 
     def print_Bo(self):
         print(self.Bo)
-
-# m_1.circ(m_2)

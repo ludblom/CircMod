@@ -1,44 +1,44 @@
 #!/usr/bin/env python3
 
 
-def int_to_binary(i):
-    b = []
-    while i != 0:
-        b.append(i%2)
-        i = int(i/2)
-    return b
-
-
-def binary_to_int(b):
-    i = 0
-    p = 0
-    for j in b:
-        if j == 1:
-            i += 2**p
-        p += 1
-    return i
-
-
-def generate_Bo(N, k):
-    Bex =  [[0 for i in range(N)] for j in range(N)]
-    alpha = k
-    for i in range(N-k):
-        for j in range(i+1, N-k):
-            print("i: {}, j: {}".format(i, j))
-            Bex = insert_alpha(alpha, i, j, Bex)
-        alpha -= 1
-
-
 class Matrix:
     def __init__(self, gen_Bo=0, N=5, k=2, M=[]):
         if(gen_Bo == 1):
-            self.M = generate_Bo(N, k)
+            self.M = self.generate_Bo(N, k)
         else:
             self.M = M
         super().__init__()
 
     def __str__(self):
         return str(self.M)
+
+    def generate_Bo(self, N, k):
+        alpha = self.binary_to_int([1 for i in range(k)])
+        n = N-k
+        Bo = [[0 for i in range(n)] for i in range(n)]
+        for j in range(n):
+            for i in range(j+1, n):
+                Bo[j][i] = alpha
+                Bo[i][j] = alpha
+            alpha -= 1
+        return Bo
+
+    def int_to_binary(self, i):
+        b = []
+        while i != 0:
+            b.append(i%2)
+            i = int(i/2)
+        return b
+
+    def binary_to_int(self, b):
+        i = 0
+        p = 0
+        for j in b:
+            if j == 1:
+                i += 2**p
+            p += 1
+        return i
+
 
 
 
