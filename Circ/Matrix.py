@@ -2,15 +2,20 @@
 
 
 class Matrix:
-    def __init__(self, gen_Bo=0, N=5, k=2, M=[]):
-        if(gen_Bo == 1):
+    def __init__(self, gen_Bo=False, N=5, k=2, M=[]):
+        if(gen_Bo == True):
             self.M = self.generate_Bo(N, k)
         else:
             self.M = M
         super().__init__()
 
     def __str__(self):
-        return str(self.M)
+        string = ''
+        for j in self.M:
+            for i in j:
+                string += '{} '.format(str(i))
+            string += '\n'
+        return string
 
     def generate_Bo(self, N, k):
         alpha = self.binary_to_int([1 for i in range(k)])
@@ -39,6 +44,15 @@ class Matrix:
             p += 1
         return i
 
+    def circ(self, M):
+        pass
+
+
+
+
+# a = Matrix(M=[3,2])
+# b = Matrix(M=[2,2])
+# c = a.circ(b)
 
 
 
