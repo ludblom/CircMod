@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 
-from Circ.Circ import Circ
+from Circ.Matrix import Bo
 
 def test():
-    circ = Circ(N=5, k=2)
-    circ.print_Bo()
+    circ = Bo(N=5, k=2)
+    print(circ.Bex)

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 
-class Matrix:
-    def __init__(self, gen_Bo=False, N=5, k=2, M=[]):
-        if(gen_Bo == True):
-            self.M = self.generate_Bo(N, k)
-        else:
-            self.M = M
+class HiddenSum:
+    def __init__(self, N=5, k=2):
+        self.biggest_binary = k
+        self.Bo = self.generate_Bo(N, k)
+        self.Bex = self.generate_Bex()
         super().__init__()
 
     def __str__(self):
@@ -16,6 +15,16 @@ class Matrix:
                 string += '{} '.format(str(i))
             string += '\n'
         return string
+
+    def generate_Bex(self):
+        Bex = []
+        Bo_size = len(self.Bo)
+        for i in range(Bo_size):
+            tmp = []
+            for j in range(Bo_size):
+                tmp.append(self.int_to_binary(self.Bo[j][i]))
+            Bex.append(tmp)
+        return Bex
 
     def generate_Bo(self, N, k):
         alpha = self.binary_to_int([1 for i in range(k)])
@@ -33,6 +42,8 @@ class Matrix:
         while i != 0:
             b.append(i%2)
             i = int(i/2)
+        while(len(b) < self.biggest_binary):
+            b.append(0)
         return b
 
     def binary_to_int(self, b):
@@ -44,8 +55,14 @@ class Matrix:
             p += 1
         return i
 
-    def circ(self, M):
-        pass
+    def matrix_mul(self, a, b):
+        prod = []
+        for j in range(len(a)):
+            tmp = []
+            for i in range(len(b)):
+                tmp.append(a[i]&b[i][j])
+            prod.append(sum(tmp)%2)
+        return prod
 
 
 
