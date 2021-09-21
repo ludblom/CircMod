@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
 
-from Circ.Matrix import Bo
+from Circ.Matrix import HiddenSum
 
 def test():
-    circ = Bo(N=5, k=2)
-    print(circ.Bex)
+    c = HiddenSum(N=3,k=1)
+
+    for i in range(1,8):
+        print("{},{}".format(i,i))
+        print("{}".format(c.ring(i,i)))
+
+test()
