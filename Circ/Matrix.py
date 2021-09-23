@@ -25,9 +25,6 @@ class HiddenSum:
         for j in range(Bo_size):
             zeroMatrix.append([0 for k in range(self.k)])
 
-        # First Bex should only be zeros
-        Bex.append(zeroMatrix)
-
         # Generate the different Bex
         for i in range(Bo_size):
             tmp = []
@@ -35,16 +32,30 @@ class HiddenSum:
                 tmp.append(self.int_to_binary(self.Bo[j][i], self.k))
             Bex.append(tmp)
 
-        Bex.append(zeroMatrix)
-
         return Bex
 
-    def get_Bx(self, n):
+    def get_Bx(self, b):
         I = self.get_identity(self.N)
-        Bx = self.Bex[n%len(self.Bex)]
+        Bx = []
+
+        for i in range(len(self.Bo)):
+            tmp = []
+            for j in range(self.k):
+                tmp.append(0)
+            Bx.append(tmp)
+
+        if type(b) is not list:
+            b = self.int_to_binary(b, self.N)
+
+        for i in range(len(b)):
+            if b[i] == 1:
+                if i < (self.N-self.k):
+                    Bx = self.xy_sum(Bx, self.Bex[i])
+
         for i in range(len(Bx)):
-            for j in range(len(Bx[0])-1, -1, -1):
+            for j in range(self.k):
                 I[i][self.N-self.k + j] = Bx[i][j]
+
         return I
 
     def generate_Bo(self, N, k):
@@ -85,7 +96,7 @@ class HiddenSum:
             prod.append(sum(tmp)%2)
         return prod
 
-    def tmp_sum(self, a, b):
+    def xy_sum(self, a, b):
         mat = []
         for i in range(len(a)):
             tmp = []
@@ -119,16 +130,10 @@ class HiddenSum:
     def ring(self, a, b):
         a_m = self.int_to_binary(a, self.N)
         b_m = self.int_to_binary(b, self.N)
-        #print("a_m: {}, b_m: {}".format(a_m, b_m))
         Mx = self.get_Bx(b)
-        #print("a = {}, b = {}, Mx: {}".format(a, b, Mx))
         aM_b = self.matrix_mul(a_m, Mx)
-        #print("aM_b: {}".format(aM_b))
         aM_bb = self.matrix_sum(aM_b, b_m)
-        #print(aM_bb)
-        #print("aM_bb: {}".format(aM_bb))
-        #print("Bex: {}, Mx: {}, aM_b: {}, aM_bb: {}".format(self.Bex, Mx, aM_b, aM_bb))
-        done = aM_bb
+        done = self.binary_to_int(aM_bb)
         return done
 
     def xor(self, a, b):
