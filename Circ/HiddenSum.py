@@ -131,8 +131,7 @@ class HiddenSum:
         Mx = self.get_Bx(b)
         aM_b = self.matrix_mul(a_m, Mx)
         aM_bb = self.matrix_sum(aM_b, b_m)
-        done = self.binary_to_int(aM_bb)
-        return done
+        return self.binary_to_int(aM_bb)
 
     def dot(self, a, b):
         a_plus_b = self.matrix_sum(self.int_to_binary(a, self.N), self.int_to_binary(b, self.N))

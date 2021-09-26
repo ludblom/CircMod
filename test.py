@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from Circ.Matrix import HiddenSum
+from Circ.HiddenSum import HiddenSum
 
 
 class TestRingRules(unittest.TestCase):

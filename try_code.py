@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Circ.Matrix import HiddenSum
+from Circ.HiddenSum import HiddenSum
 
 
 def print_ring_table(c, n):
@@ -32,5 +32,34 @@ def test():
     # print(c.Bex)
 
 
+def print_function(N, k):
+    c = HiddenSum(N=N, k=k)
+    print("$\circ$ & ", end='')
+    for i in range(2**N):
+        if(i < 2**N-1):
+            print("{} & ".format(i), end='')
+        else:
+            print("{} \\\\".format(i))
+
+    for a in range(2**N):
+        print("{} & ".format(a), end='')
+        for b in range(2**N):
+            if(b < 2**N-1):
+                # Ring
+                # print("{} & ".format(c.ring(a, b)), end='')
+                # Xor
+                print("{} & ".format(c.xor(a, b)), end='')
+            else:
+                # Ring
+                # print("{} ".format(c.ring(a, b)), end='')
+                print("{} ".format(c.xor(a, b)), end='')
+        print("\\\\")
+
+
+def mat_sum(a, b):
+    c = HiddenSum(N=3, k=1)
+    print(c.mat_tmp_sum(a, b))
+
+
 if __name__ == '__main__':
-    test()
+    mat_sum([1,1,1], [1,0,1])
