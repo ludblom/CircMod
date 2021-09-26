@@ -50,7 +50,7 @@ class HiddenSum:
         for i in range(len(b)):
             if b[i] == 1:
                 if i < (self.N-self.k):
-                    Bx = self.xy_sum(Bx, self.Bex[i])
+                    Bx = self.matrix_sum(Bx, self.Bex[i])
 
         for i in range(len(Bx)):
             for j in range(self.k):
@@ -96,22 +96,20 @@ class HiddenSum:
             prod.append(sum(tmp)%2)
         return prod
 
-    def xy_sum(self, a, b):
-        mat = []
-        for i in range(len(a)):
-            tmp = []
-            for j in range(len(a[0])):
-                t = a[i][j]+b[i][j]
-                tmp.append(t%2)
-            mat.append(tmp)
-        return mat
-
     def matrix_sum(self, a, b):
-        tmp = []
-        for i in range(len(a)):
-            t = a[i]+b[i]
-            tmp.append(t%2)
-        return tmp
+        mat = []
+        if type(a[0]) == list:
+            for i in range(len(a)):
+                tmp = []
+                for j in range(len(a[0])):
+                    t = a[i][j]+b[i][j]
+                    tmp.append(t%2)
+                mat.append(tmp)
+        else:
+            for i in range(len(a)):
+                t = a[i]+b[i]
+                mat.append(t%2)
+        return mat
 
     def get_identity(self, n):
         I = []
