@@ -1,36 +1,75 @@
 #!/usr/bin/env python3
 
+import unittest
 from Circ.Matrix import HiddenSum
 
 
-def print_ring_table(c, n):
-    for i in range(n):
-        for j in range(n):
-            print("{}".format(c.ring(i,j)), end=' ')
-        print()
-    print()
+class TestRingRules(unittest.TestCase):
+    def test_symmetry(self):
+        test_sizes = [
+            (3, 1),
+            (5, 2)
+        ]
 
+        for N, k in test_sizes:
+            c = HiddenSum(N=N,k=k)
+            for a in range(2**N):
+                for b in range(2**N):
+                    self.assertEqual(
+                        c.ring(a,b),
+                        c.ring(b,a),
+                        "ring({},{}) should be equal to ring({},{}), N: {}, k: {}".format(a,b,b,a,N,k)
+                    )
 
-def print_xor_table(c, n):
-    for i in range(n):
-        for j in range(n):
-            print("{}".format(c.xor(i,j)), end=' ')
-        print()
-    print()
+    def test_nondistribution(self):
+        test_sizes = [
+            (3, 1),
+            (5, 2)
+        ]
 
+        for N, k in test_sizes:
+            hs = HiddenSum(N=N,k=k)
+            for a in range(2**N):
+                for b in range(2**N):
+                    for c in range(2**N):
+                        a_plus_b = hs.binary_to_int(hs.matrix_sum(hs.int_to_binary(a, N), hs.int_to_binary(b, N)))
+                        a_plus_b_circ_c = hs.ring(a_plus_b, c)
 
-def test():
-    c = HiddenSum(N=3,k=1)
+                        a_ring_c = hs.int_to_binary(hs.ring(a, c), N)
+                        b_ring_c = hs.int_to_binary(hs.ring(b, c), N)
+                        a_sum_c = hs.matrix_sum(a_ring_c, b_ring_c)
+                        end = hs.binary_to_int(hs.matrix_sum(a_sum_c, hs.int_to_binary(c, N)))
 
-    print("-- XOR TABLE --")
-    print_xor_table(c, 8)
+                        self.assertEqual(
+                            a_plus_b_circ_c,
+                            end,
+                            "N: {}, k: {}, a: {}, b: {}, c: {}".format(N, k, a, b, c)
+                        )
 
-    print("-- RING TABLE --")
-    print_ring_table(c, 8)
+    def test_matrix_product(self):
+        test_sizes = [
+            (3, 1),
+            (5, 2)
+        ]
 
-    # Bex
-    # print(c.Bex)
+        for N, k in test_sizes:
+            hs = HiddenSum(N=N,k=k)
+            for x in range(2**N):
+                for a in range(2**N):
+                    for b in range(2**N):
+                        a_ring_b = hs.ring(a, b)
+                        x_ring_ab = hs.ring(x, a_ring_b)
+
+                        Mx_a_ring_b = hs.get_Bx(a_ring_b)
+                        xMxM_a_ring_b = hs.matrix_mul(hs.int_to_binary(x, N), Mx_a_ring_b)
+                        end = hs.binary_to_int(hs.matrix_sum(xMxM_a_ring_b, hs.int_to_binary(a_ring_b, N)))
+
+                        self.assertEqual(
+                            x_ring_ab,
+                            end,
+                            "N: {}, k: {}, x: {}, a: {}, b: {}".format(N, k, x, a, b)
+                        )
 
 
 if __name__ == '__main__':
-    test()
+    unittest.main()
