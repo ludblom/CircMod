@@ -56,10 +56,5 @@ def print_function(N, k):
         print("\\\\")
 
 
-def mat_sum(a, b):
-    c = HiddenSum(N=3, k=1)
-    print(c.mat_tmp_sum(a, b))
-
-
 if __name__ == '__main__':
-    mat_sum([1,1,1], [1,0,1])
+    print_function(3, 1)
