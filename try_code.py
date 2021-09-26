@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from Circ.HiddenSum import HiddenSum
+from ToyCipher.ToyCipher import ToyCipher
 
 
 def print_ring_table(c, n):
@@ -56,5 +57,10 @@ def print_function(N, k):
         print("\\\\")
 
 
+def toyCode():
+    t = ToyCipher()
+    print(t.S)
+
+
 if __name__ == '__main__':
-    print_function(3, 1)
+    toyCode()
