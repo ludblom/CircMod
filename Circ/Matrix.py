@@ -136,6 +136,13 @@ class HiddenSum:
         done = self.binary_to_int(aM_bb)
         return done
 
+    def dot(self, a, b):
+        a_plus_b = self.matrix_sum(self.int_to_binary(a, self.N), self.int_to_binary(b, self.N))
+        a_ring_b = self.int_to_binary(self.ring(a, b), self.N)
+        a_dot_b = self.matrix_sum(a_plus_b, a_ring_b)
+        return self.binary_to_int(a_dot_b)
+
+
     def xor(self, a, b):
         ab = []
         a_m = self.int_to_binary(a, self.N)
