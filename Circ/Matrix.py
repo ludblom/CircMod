@@ -56,3 +56,44 @@ class Matrix:
             one += 1
             I.append(I_i)
         return I
+
+    def row_shift(self, M, x, y):
+        tmp = 0
+        for i in range(len(M)):
+            tmp = M[x][i]
+            M[x][i] = M[y][i]
+            M[y][i] = tmp
+        return M
+
+    def mul_row(self, M, x, y):
+        for i in range(len(M)):
+            M[y][i] ^= M[x][i]
+        return M
+
+    # TODO Not working
+    def calculate_inverse(self, A):
+        I = self.get_identity(len(A))
+        foundPivot = False
+        for i in range(len(A)):
+            if A[i][i] != 1:
+                for j in range(i+1, len(A)):
+                    if A[j][i] == 1:
+                        foundPivot = True
+                        A = self.row_shift(A, i, j)
+                        I = self.row_shift(I, i, j)
+                        break
+                if foundPivot == False:
+                    return []
+                else:
+                    foundPivot = False
+            for j in range(i+1, len(A)):
+                if A[j][i] == 1:
+                    A = self.mul_row(A, i, j)
+                    I = self.mul_row(I, i, j)
+
+        for i in range(len(A)-1, 0, -1):
+            for j in range(i-1, -1, -1):
+                if A[j][i] == 1:
+                    A = self.mul_row(A, i, j)
+                    I = self.mul_row(I, i, j)
+        return I
