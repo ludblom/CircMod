@@ -60,6 +60,7 @@ def print_function(N, k):
 def toyCode():
     t = ToyCipher()
     print(t.S)
+    print(t.S_I)
 
 
 if __name__ == '__main__':

@@ -2,30 +2,28 @@
 
 from Circ.Matrix import Matrix
 
-import random
+import random, copy
 
 
 class ToyCipher(Matrix):
-    def __init__(self, N=5):
+    def __init__(self, N=3):
         self.N = N
         self.P, self.P_I = self.permutation_box()
         self.S, self.S_I = self.substitution_box()
         super().__init__()
 
     def permutation_box(self):
-        P = []
         P_I = []
         while P_I == []:
-            P = []
+            P_tmp = []
             for _ in range(self.N):
                 tmp = []
                 for _ in range(self.N):
                     rand = random.randint(0, 1)
                     tmp.append(rand)
-                P.append(tmp)
-            P_I = self.calculate_inverse(P)
-            print(P)
-            print(P_I)
+                P_tmp.append(tmp)
+            P = copy.deepcopy(P_tmp)
+            P_I = self.calculate_inverse(P_tmp)
         return P, P_I
 
     def substitution_box(self):

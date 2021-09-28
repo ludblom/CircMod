@@ -70,7 +70,6 @@ class Matrix:
             M[y][i] ^= M[x][i]
         return M
 
-    # TODO Not working
     def calculate_inverse(self, A):
         I = self.get_identity(len(A))
         foundPivot = False
