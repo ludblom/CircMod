@@ -35,3 +35,16 @@ class ToyCipher(Matrix):
             S = copy.deepcopy(S_tmp)
             S_I = self.calculate_inverse(S_tmp)
         return S, S_I
+
+    def string_to_binary(self, string):
+        return str(''.join(format(i, '07b') for i in bytearray(string, encoding = 'utf-8')))
+
+    def binary_to_string(self, binary):
+        string = ' '
+        for i in range(0, len(binary), 7):
+            tmp = binary[i:i + 7]
+            string += chr(int(tmp, 2))
+        return string[1:]
+
+    def encrypt(self, data, key, armor=False):
+        pass
