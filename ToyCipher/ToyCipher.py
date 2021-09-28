@@ -1,40 +1,15 @@
 #!/usr/bin/env python3
 
-from Circ.Matrix import Matrix
+from .SBox import SBox
+from .PBox import PBox
 
-import random, copy
 
-
-class ToyCipher(Matrix):
-    def __init__(self, N=3):
+class ToyCipher(SBox, PBox):
+    def __init__(self, N=3, key_size=32):
         self.N = N
-        self.P, self.P_I = self.permutation_box()
-        self.S, self.S_I = self.substitution_box()
+        self.P, self.P_I = self.permutation_box(N)
+        self.S, self.S_I = self.substitution_box(N)
         super().__init__()
-
-    def permutation_box(self):
-        P = {}
-        P_I = {}
-        random_values = [i for i in range(2**self.N)]
-        random.shuffle(random_values)
-        for i in range(2**self.N):
-            P[i] = random_values[i]
-            P_I[random_values[i]] = i
-        return P, P_I
-
-    def substitution_box(self):
-        S_I = []
-        while S_I == []:
-            S_tmp = []
-            for _ in range(self.N):
-                tmp = []
-                for _ in range(self.N):
-                    rand = random.randint(0, 1)
-                    tmp.append(rand)
-                S_tmp.append(tmp)
-            S = copy.deepcopy(S_tmp)
-            S_I = self.calculate_inverse(S_tmp)
-        return S, S_I
 
     def string_to_binary(self, string):
         return str(''.join(format(i, '07b') for i in bytearray(string, encoding = 'utf-8')))
@@ -47,4 +22,5 @@ class ToyCipher(Matrix):
         return string[1:]
 
     def encrypt(self, data, key, armor=False):
+        # 16
         pass
