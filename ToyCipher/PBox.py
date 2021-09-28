@@ -5,13 +5,13 @@ import copy, random
 
 
 class PBox(Matrix):
-    def permutation_box(self, N):
+    def permutation_box(self, num_of_octals):
         P_I = []
         while P_I == []:
             P_tmp = []
-            for _ in range(N):
+            for _ in range(num_of_octals*3):
                 tmp = []
-                for _ in range(N):
+                for _ in range(num_of_octals*3):
                     rand = random.randint(0, 1)
                     tmp.append(rand)
                 P_tmp.append(tmp)
