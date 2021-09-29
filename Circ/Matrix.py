@@ -70,6 +70,15 @@ class Matrix:
             M[y][i] ^= M[x][i]
         return M
 
+    def mul_row_column(self, x, M):
+        row_col = []
+        for j in range(len(x)):
+            tmp = 0
+            for i in range(len(x)):
+                tmp += x[i]*M[i][j]
+            row_col.append(tmp%2)
+        return row_col
+
     def calculate_inverse(self, A):
         I = self.get_identity(len(A))
         foundPivot = False
