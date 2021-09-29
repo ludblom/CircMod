@@ -5,7 +5,7 @@ import copy, random
 
 class PBox:
     def __init__(self):
-        self.P, self.P_I = self.permutation_box(self.key_len)
+        self.P, self.P_I = self.permutation_box(self.block_len)
         super().__init__()
 
     def permutation_box(self, num_of_octals):

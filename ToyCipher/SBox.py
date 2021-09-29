@@ -5,14 +5,14 @@ import random
 
 class SBox:
     def __init__(self):
-        self.S, self.S_I = self.substitution_box(self.key_len)
+        self.S, self.S_I = self.substitution_box(self.block_len)
         super().__init__()
 
-    def substitution_box(self, key_len):
+    def substitution_box(self, block_len):
         S = {}
         S_I = {}
-        random_values = [int(oct(i)[2:]) for i in range(2**key_len)]
-        sorted_values = [int(oct(i)[2:]) for i in range(2**key_len)]
+        random_values = [int(oct(i)[2:]) for i in range(2**block_len)]
+        sorted_values = [int(oct(i)[2:]) for i in range(2**block_len)]
         random.shuffle(random_values)
         for i in range(len(sorted_values)):
             S[sorted_values[i]] = random_values[i]
@@ -20,7 +20,7 @@ class SBox:
         return S, S_I
 
     def preform_data_substitution(self, data, encrypt):
-        for i in range(0, self.msg_len, 2):
+        for i in range(0, self.block_len, 2):
             exchange = data[i]*10 + data[i+1]
 
             if(encrypt):

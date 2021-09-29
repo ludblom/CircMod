@@ -25,7 +25,7 @@ class Key:
 
     def new_key_round(self, key, encrypt):
         tmp_key = []
-        for i in range(self.key_len):
+        for i in range(self.block_len):
             if encrypt:
                 tmp_key.append(self.K[key[i]])
             else:
