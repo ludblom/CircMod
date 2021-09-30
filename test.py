@@ -3,6 +3,7 @@
 """Tests for the Ring product, ToyCipher."""
 
 import unittest
+import random
 from Attack.RingOperator import Ring
 from ToyCipher.ToyCipher import ToyCipher
 
@@ -186,15 +187,25 @@ class TestRingRules(unittest.TestCase):
                         )
 
 
-# class TestToyCipher(unittest.TestCase):
-#     """Testing the ToyCipher."""
+class TestToyCipher(unittest.TestCase):
+    """Testing the ToyCipher."""
 
-#     def test_enc_dec(self):
-#         """Test if encrypting and decrypting a string is equal."""
-#         c = ToyCipher()
-#         for i in range(100):
-#             msg = []
-#             c.encrypt(msg, msg)
+    def test_enc_dec(self):
+        """Test if encrypting and decrypting a string is equal."""
+        c = ToyCipher()
+        for i in range(100):
+            msg = []
+            key = []
+            for i in range(c.block_len):
+                msg.append(random.randint(0, c.block_len))
+                key.append(random.randint(0, c.block_len))
+            enc = c.encrypt(msg, key)
+            dec = c.decrypt(enc, key)
+            self.assertEqual(
+                msg,
+                dec,
+                "msg: {}, dec: {}, key: {}".format(msg, dec, key)
+            )
 
 
 if __name__ == '__main__':
