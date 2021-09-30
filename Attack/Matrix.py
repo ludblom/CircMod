@@ -1,6 +1,33 @@
 #!/usr/bin/env python3
 
+"""Matrix modification classes."""
+
 class Matrix:
+    """
+    The Matrix class containing functions to modify matrices.
+
+    ...
+
+    Attributes
+    ----------
+    None
+
+    Methods
+    -------
+    int_to_binary(i, l):
+        convert int to binary
+    binary_to_int(b):
+        convert binary to int
+    matrix_mul(a, b):
+
+    matrix_sum(a, b):
+    get_identity(n):
+    row_shift(M, x, y):
+    mul_row(M, x, y):
+    mul_row_column(x, M):
+    calculate_inverse(A):
+    """
+
     def int_to_binary(self, i, l):
         b = []
         while i != 0:
@@ -75,7 +102,7 @@ class Matrix:
         for j in range(len(x)):
             tmp = 0
             for i in range(len(x)):
-                tmp += x[i]*M[i][j]
+                tmp += x[i] ^ M[i][j]
             row_col.append(tmp%2)
         return row_col
 

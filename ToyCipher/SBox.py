@@ -1,14 +1,56 @@
 #!/usr/bin/env python3
 
+"""SBox used in the ToyCipher class."""
+
 import random
 
 
 class SBox:
+    """
+    The SBox class.
+
+    ...
+
+    Attributes
+    ----------
+    None
+
+    Methods
+    -------
+    substitution_box(block_len):
+        Generate the sumstitution box
+    preform_data_substitution(data, encrypt):
+        Preform substitution
+    """
+
     def __init__(self):
+        """
+        Init default parameters.
+
+        Parameters
+        ----------
+        S : list of ints
+            Substitution box for encryption
+        S_I : list of ints
+            Substitution box for decryption
+        """
         self.S, self.S_I = self.substitution_box(self.block_len)
         super().__init__()
 
     def substitution_box(self, block_len):
+        """
+        Create the substitution box.
+
+        Parameters
+        ----------
+        block_len : int
+            the size of the block TODO Only possible with base 3?
+
+        Returns
+        -------
+        tuple of S and S_I
+            the encryption (S) and decryption (S_I) substitution box
+        """
         S = {}
         S_I = {}
         random_values = [int(oct(i)[2:]) for i in range(2**block_len)]
@@ -20,6 +62,14 @@ class SBox:
         return S, S_I
 
     def preform_data_substitution(self, data, encrypt):
+        """
+        Preform the substitution.
+
+        Parameters
+        ----------
+        data : the data to substitute
+        encrypt : True if we are to encrypt, False if decryption
+        """
         for i in range(0, self.block_len, 2):
             exchange = data[i]*10 + data[i+1]
 
@@ -29,5 +79,5 @@ class SBox:
                 exchange = self.S_I[exchange]
 
             data[i] = int(exchange/10)
-            data[i+1] = exchange%10
+            data[i+1] = exchange % 10
         return data

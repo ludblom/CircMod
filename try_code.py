@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Circ.HiddenSum import HiddenSum
+from Attack.RingOperator import Ring
 from ToyCipher.ToyCipher import ToyCipher
 
 
@@ -15,13 +15,13 @@ def print_ring_table(c, n):
 def print_xor_table(c, n):
     for i in range(n):
         for j in range(n):
-            print("{}".format(c.xor(i,j)), end=' ')
+            print("{}".format(i ^ j), end=' ')
         print()
     print()
 
 
 def test():
-    c = HiddenSum(N=3,k=1)
+    c = Ring(N=3,k=1)
 
     print("-- XOR TABLE --")
     print_xor_table(c, 8)
@@ -34,7 +34,7 @@ def test():
 
 
 def print_function(N, k):
-    c = HiddenSum(N=N, k=k)
+    c = Ring(N=N, k=k)
     print("$\circ$ & ", end='')
     for i in range(2**N):
         if(i < 2**N-1):
@@ -49,11 +49,11 @@ def print_function(N, k):
                 # Ring
                 # print("{} & ".format(c.ring(a, b)), end='')
                 # Xor
-                print("{} & ".format(c.xor(a, b)), end='')
+                print("{} & ".format(a ^ b), end='')
             else:
                 # Ring
                 # print("{} ".format(c.ring(a, b)), end='')
-                print("{} ".format(c.xor(a, b)), end='')
+                print("{} ".format(a ^ b), end='')
         print("\\\\")
 
 
