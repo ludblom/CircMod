@@ -102,7 +102,7 @@ class Matrix:
         for j in range(len(x)):
             tmp = 0
             for i in range(len(x)):
-                tmp += x[i] ^ M[i][j]
+                tmp += x[i] * M[i][j]
             row_col.append(tmp%2)
         return row_col
 
