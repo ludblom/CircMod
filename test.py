@@ -2,11 +2,12 @@
 
 """Tests for the Ring product, ToyCipher."""
 
+from Attack.RingOperator import Ring
+from ToyCipher.ToyCipher import ToyCipher
+
 import unittest
 import random
 import logging
-from Attack.RingOperator import Ring
-from ToyCipher.ToyCipher import ToyCipher
 
 
 class TestRingRules(unittest.TestCase):
