@@ -7,6 +7,8 @@ from .SBox import SBox
 from .PBox import PBox
 from .Key import Key
 
+import copy
+
 
 class ToyCipher(Matrix, SBox, PBox, Key):
     """
@@ -99,20 +101,20 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             raise TypeError('Key is not of correct size.')
 
         if(not self.__octals(data)):
-            raise TypeError('Data is not a list or not only octals.')
+            raise TypeError('Data is not a list, string or not only octals.')
 
         if(not self.__octals(key)):
             raise TypeError('Key is not a list, string or not only octals.')
 
-    def encrypt(self, data, key):
+    def encrypt(self, data_t, key_t):
         """
         Encrypt data using the key.
 
         Parameters
         ----------
-        data : list or string (octals)
+        data_t : list or string (octals)
             list or string of octals to encrypt
-        key : list or string (octals)
+        key_t : list or string (octals)
             list or string of octals for a key
 
         Returns
@@ -127,6 +129,9 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             when data or key is not list or string
             when the length of data or key is not correct
         """
+        data = copy.deepcopy(data_t)
+        key = copy.deepcopy(key_t)
+
         try:
             self.__check_input(data, key)
         except Exception as e:
@@ -148,7 +153,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         return data
 
-    def decrypt(self, data, key):
+    def decrypt(self, data_t, key_t):
         """
         Decrypt data using the key.
 
@@ -172,6 +177,9 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             when data or key is not list or string
             when the length of data or key is not correct
         """
+        data = copy.deepcopy(data_t)
+        key = copy.deepcopy(key_t)
+
         try:
             self.__check_input(data, key)
         except Exception as e:
