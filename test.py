@@ -96,7 +96,7 @@ class TestRingRules(unittest.TestCase):
                         Mx_a_ring_b = hs.get_Bx(a_ring_b)
 
                         # x * M_{a o b}
-                        xMxM_a_ring_b = hs.matrix_mul(
+                        xMxM_a_ring_b = hs.matrix_mul_row_column(
                                             hs.int_to_binary(x, N),
                                             Mx_a_ring_b
                         )

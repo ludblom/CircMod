@@ -150,7 +150,7 @@ class Matrix:
             M[y][i] = tmp
         return M
 
-    def mul_row(self, M, x, y):
+    def matrix_mul_row(self, M, x, y):
         """
         Multiplicate row x with y.
 
@@ -172,34 +172,8 @@ class Matrix:
             M[y][i] ^= M[x][i]
         return M
 
-    def matrix_mul(self, a, b):
+    def matrix_mul_row_column(self, x, M):
         """
-        TODO Duplicate of mul_row_column.
-
-        Multiplicate [] with [[..]..] matrix.
-
-        Parameters
-        ----------
-        a : list of int
-        b : list of list of int
-
-        Returns
-        -------
-        list of int
-            the matrix product
-        """
-        prod = []
-        for j in range(len(a)):
-            tmp = []
-            for i in range(len(b)):
-                tmp.append(a[i] & b[i][j])
-            prod.append(sum(tmp) % 2)
-        return prod
-
-    def mul_row_column(self, x, M):
-        """
-        TODO Duplicate of matrix_mul.
-
         Multiplicate [] with [[..]..] matrix.
 
         Parameters
@@ -216,7 +190,7 @@ class Matrix:
         for j in range(len(x)):
             tmp = 0
             for i in range(len(x)):
-                tmp += x[i] * M[i][j]
+                tmp += x[i] & M[i][j]
             row_col.append(tmp % 2)
         return row_col
 
@@ -249,12 +223,12 @@ class Matrix:
                     foundPivot = False
             for j in range(i+1, len(A)):
                 if A[j][i] == 1:
-                    A = self.mul_row(A, i, j)
-                    I = self.mul_row(I, i, j)
+                    A = self.matrix_mul_row(A, i, j)
+                    I = self.matrix_mul_row(I, i, j)
 
         for i in range(len(A)-1, 0, -1):
             for j in range(i-1, -1, -1):
                 if A[j][i] == 1:
-                    A = self.mul_row(A, i, j)
-                    I = self.mul_row(I, i, j)
+                    A = self.matrix_mul_row(A, i, j)
+                    I = self.matrix_mul_row(I, i, j)
         return I

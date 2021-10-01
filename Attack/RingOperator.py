@@ -169,7 +169,7 @@ class Ring(Matrix):
         a_m = self.int_to_binary(a, self.N)
         b_m = self.int_to_binary(b, self.N)
         Mx = self.get_Bx(b)
-        aM_b = self.matrix_mul(a_m, Mx)
+        aM_b = self.matrix_mul_row_column(a_m, Mx)
         aM_bb = self.matrix_sum(aM_b, b_m)
         return self.binary_to_int(aM_bb)
 

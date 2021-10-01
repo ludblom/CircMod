@@ -125,7 +125,7 @@ class PBox:
         """
         bin_data = self.convert_oct_to_binary(data)
         if encrypt:
-            res_data = self.mul_row_column(bin_data, self.P)
+            res_data = self.matrix_mul_row_column(bin_data, self.P)
         else:
-            res_data = self.mul_row_column(bin_data, self.P_I)
+            res_data = self.matrix_mul_row_column(bin_data, self.P_I)
         return self.convert_binary_to_oct(res_data)
