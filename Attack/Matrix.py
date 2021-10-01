@@ -74,29 +74,6 @@ class Matrix:
             p += 1
         return i
 
-    def matrix_mul(self, a, b):
-        """
-        TODO Duplicate of mul_row_column.
-        Multiplicate [] with [[..]..] matrix.
-
-        Parameters
-        ----------
-        a : list of int
-        b : list of list of int
-
-        Returns
-        -------
-        list of int
-            the matrix product
-        """
-        prod = []
-        for j in range(len(a)):
-            tmp = []
-            for i in range(len(b)):
-                tmp.append(a[i] & b[i][j])
-            prod.append(sum(tmp) % 2)
-        return prod
-
     def matrix_sum(self, a, b):
         """
         Sum two matrices.
@@ -195,9 +172,34 @@ class Matrix:
             M[y][i] ^= M[x][i]
         return M
 
+    def matrix_mul(self, a, b):
+        """
+        TODO Duplicate of mul_row_column.
+
+        Multiplicate [] with [[..]..] matrix.
+
+        Parameters
+        ----------
+        a : list of int
+        b : list of list of int
+
+        Returns
+        -------
+        list of int
+            the matrix product
+        """
+        prod = []
+        for j in range(len(a)):
+            tmp = []
+            for i in range(len(b)):
+                tmp.append(a[i] & b[i][j])
+            prod.append(sum(tmp) % 2)
+        return prod
+
     def mul_row_column(self, x, M):
         """
         TODO Duplicate of matrix_mul.
+
         Multiplicate [] with [[..]..] matrix.
 
         Parameters

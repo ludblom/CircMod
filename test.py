@@ -5,7 +5,6 @@
 import unittest
 import random
 import logging
-import sys
 from Attack.RingOperator import Ring
 from ToyCipher.ToyCipher import ToyCipher
 
