@@ -7,8 +7,8 @@ from .SBox import SBox
 from .PBox import PBox
 from .Key import Key
 
-import copy
 from pathlib import Path
+import copy
 
 
 class ToyCipher(Matrix, SBox, PBox, Key):
@@ -122,12 +122,43 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         Raises
         ------
-        ValueError
-            when the length of data or key is not correct
-        TypeError
-            when data or key is not list or string
-            when data or key is not octals
+        None
         """
+        create = Path.cwd().joinpath(file_name)
+        with open(create, 'a') as f:
+            f.write('## P BOX\n')
+            for row in self.P:
+                for elem in row:
+                    f.write('{} '.format(elem))
+                f.write('\n')
+            f.write('\n')
+
+            f.write('## P_I BOX\n')
+            for row in self.P_I:
+                for elem in row:
+                    f.write('{} '.format(elem))
+                f.write('\n')
+            f.write('\n')
+
+            f.write('## S BOX\n')
+            for key in self.S:
+                f.write('{}: {}\n'.format(key, self.S[key]))
+            f.write('\n')
+
+            f.write('## S_I BOX\n')
+            for key in self.S_I:
+                f.write('{}: {}\n'.format(key, self.S_I[key]))
+            f.write('\n')
+
+            f.write('## K BOX\n')
+            for key in self.K:
+                f.write('{}: {}\n'.format(key, self.K[key]))
+            f.write('\n')
+
+            f.write('## K_I BOX\n')
+            for key in self.K:
+                f.write('{}: {}\n'.format(key, self.K_I[key]))
+            f.write('\n')
 
     def encrypt(self, data_t, key_t):
         """
