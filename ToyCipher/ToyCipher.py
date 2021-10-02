@@ -8,6 +8,7 @@ from .PBox import PBox
 from .Key import Key
 
 import copy
+from pathlib import Path
 
 
 class ToyCipher(Matrix, SBox, PBox, Key):
@@ -89,22 +90,44 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Raises
         ------
         ValueError
-            when data or key is not octals
+            when the length of data or key is not correct
         TypeError
             when data or key is not list or string
-            when the length of data or key is not correct
+            when data or key is not octals
         """
         if(len(data) != self.block_len):
-            raise TypeError('Data is not of correct size.')
+            raise ValueError('Data is not of correct size.')
 
         if(len(key) != self.block_len):
-            raise TypeError('Key is not of correct size.')
+            raise ValueError('Key is not of correct size.')
 
         if(not self.__octals(data)):
             raise TypeError('Data is not a list, string or not only octals.')
 
         if(not self.__octals(key)):
             raise TypeError('Key is not a list, string or not only octals.')
+
+    def save_currect_cipher(self, file_name):
+        """
+        Save the current cipher to a text file.
+
+        Parameters
+        ----------
+        file_name : string
+            path to where the cipher is to be saved
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            when the length of data or key is not correct
+        TypeError
+            when data or key is not list or string
+            when data or key is not octals
+        """
 
     def encrypt(self, data_t, key_t):
         """

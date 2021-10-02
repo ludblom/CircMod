@@ -18,7 +18,7 @@ class SBox:
     Methods
     -------
     substitution_box(block_len):
-        Generate the sumstitution box
+        Generate the substitution box
     preform_data_substitution(data, encrypt):
         Preform substitution
     """
@@ -44,7 +44,7 @@ class SBox:
         Parameters
         ----------
         block_len : int
-            the size of the block TODO Only possible with base 3?
+            the size of the block TODO Only possible with base 3? (aka octals)
 
         Returns
         -------
