@@ -112,6 +112,92 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         if(not self.__octals(key)):
             raise TypeError('Key is not a list, string or not only octals.')
 
+    def __load_p_box(self, orig_indent, content, box):
+        """
+        Load the P-box.
+
+        Parameters
+        ----------
+        orig_indent : int
+            how far have we already gone
+        content : list of str
+            the file with the data
+        box : str
+            P or P_I that is copied over
+
+        Returns
+        -------
+        int
+            the length of P or P_I
+
+        Raises
+        ------
+        None
+        """
+        i = 1
+
+        if(box == 'P'):
+            self.P = []
+        else:
+            self.P_I = []
+
+        while(content[i+orig_indent] != ''):
+            tmp = []
+            for b in content[i+orig_indent].split(' '):
+                tmp.append(int(b))
+            if(box == 'P'):
+                self.P.append(tmp)
+            else:
+                self.P_I.append(tmp)
+            i += 1
+        return i
+
+    def __load_s_box(self, orig_indent, content, box):
+        """
+        Load the S-box or Key box.
+
+        Parameters
+        ----------
+        orig_indent : int
+            how far have we already gone
+        content : list of str
+            the file with the data
+        box : str
+            S, S_I, K or K_I that is copied over
+
+        Returns
+        -------
+        int
+            the length of S, S_I, K or K_I
+
+        Raises
+        ------
+        None
+        """
+        i = 1
+
+        if(box == "S"):
+            self.S = {}
+        elif(box == "S_I"):
+            self.S_I = {}
+        elif(box == "K"):
+            self.K = {}
+        else:
+            self.K_I = {}
+
+        while(content[i+orig_indent] != ''):
+            a, b = content[i+orig_indent].split(' ')
+            if(box == "S"):
+                self.S[int(a)] = int(b)
+            elif(box == "S_I"):
+                self.S_I[int(a)] = int(b)
+            elif(box == "K"):
+                self.K[int(a)] = int(b)
+            else:
+                self.K_I[int(a)] = int(b)
+            i += 1
+        return i
+
     def save_currect_cipher(self, file_name, hard=False):
         """
         Save the current cipher to a text file.
@@ -194,60 +280,30 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         if not file_name.is_file():
             raise FileNotFoundError('File {} do not exist.'.format(file_name))
-        else:
-            with open(file_name, 'r') as f:
-                content = f.read().splitlines()
 
+        with open(file_name, 'r') as f:
+            content = f.read().splitlines()
+
+        # Exchange data in the boxes
         i = 0
         while(i < len(content)):
             if(content[i] == "## P BOX"):
-                i += 1
-                self.P = []
-                while(content[i] != ''):
-                    tmp = []
-                    for b in content[i].split(' '):
-                        tmp.append(int(b))
-                    self.P.append(tmp)
-                    i += 1
+                i += self.__load_p_box(i, content, 'P')
             elif(content[i] == "## P_I BOX"):
-                i += 1
-                self.P_I = []
-                while(content[i] != ''):
-                    tmp = []
-                    for b in content[i].split(' '):
-                        tmp.append(int(b))
-                    self.P_I.append(tmp)
-                    i += 1
+                i += self.__load_p_box(i, content, 'P_I')
             elif(content[i] == "## S BOX"):
-                i += 1
-                self.S = {}
-                while(content[i] != ''):
-                    a, b = content[i].split(' ')
-                    self.S[int(a)] = int(b)
-                    i += 1
+                i += self.__load_s_box(i, content, 'S')
             elif(content[i] == "## S_I BOX"):
-                i += 1
-                self.S_I = {}
-                while(content[i] != ''):
-                    a, b = content[i].split(' ')
-                    self.S_I[int(a)] = int(b)
-                    i += 1
+                i += self.__load_s_box(i, content, 'S_I')
             elif(content[i] == "## K BOX"):
-                i += 1
-                self.K = {}
-                while(content[i] != ''):
-                    a, b = content[i].split(' ')
-                    self.K[int(a)] = int(b)
-                    i += 1
+                i += self.__load_s_box(i, content, 'K')
             elif(content[i] == "## K_I BOX"):
-                i += 1
-                self.K_I = {}
-                while(content[i] != ''):
-                    a, b = content[i].split(' ')
-                    self.K_I[int(a)] = int(b)
-                    i += 1
+                i += self.__load_s_box(i, content, 'K_I')
             else:
                 i += 1
+
+        # Convert the column len to octal representation
+        self.block_len = len(self.P)/3
 
     def encrypt(self, data_t, key_t):
         """
