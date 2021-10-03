@@ -9,6 +9,7 @@ from .Key import Key
 
 from pathlib import Path
 import copy
+import os
 
 
 class ToyCipher(Matrix, SBox, PBox, Key):
@@ -30,6 +31,10 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Make sure a list or string only contain octals
     __check_input(data, key):
         Check that the inputs are correct (data and key)
+    save_currect_cipher(file_name):
+        Save the current cipher to a file in position file_name
+    load_cipher(file_name):
+        Load a cipher in the path file_name
     encrypt(data, key):
         encrypt the data
     decrypt(data, key):
@@ -107,7 +112,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         if(not self.__octals(key)):
             raise TypeError('Key is not a list, string or not only octals.')
 
-    def save_currect_cipher(self, file_name):
+    def save_currect_cipher(self, file_name, hard=False):
         """
         Save the current cipher to a text file.
 
@@ -115,6 +120,8 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         ----------
         file_name : string
             path to where the cipher is to be saved
+        hard : bool
+            overwrite a file with the same name
 
         Returns
         -------
@@ -122,43 +129,125 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         Raises
         ------
-        None
+        OSError
+            when the file exist and hard flag is not set to True
         """
         create = Path.cwd().joinpath(file_name)
+
+        if(create.is_file() and hard):
+            os.remove(create)
+        elif(create.is_file()):
+            raise OSError("File exist: {}".format(create))
+
         with open(create, 'a') as f:
             f.write('## P BOX\n')
             for row in self.P:
-                for elem in row:
-                    f.write('{} '.format(elem))
+                f.write(' '.join([str(i) for i in row]))
                 f.write('\n')
             f.write('\n')
 
             f.write('## P_I BOX\n')
             for row in self.P_I:
-                for elem in row:
-                    f.write('{} '.format(elem))
+                f.write(' '.join([str(i) for i in row]))
                 f.write('\n')
             f.write('\n')
 
             f.write('## S BOX\n')
             for key in self.S:
-                f.write('{}: {}\n'.format(key, self.S[key]))
+                f.write('{} {}\n'.format(key, self.S[key]))
             f.write('\n')
 
             f.write('## S_I BOX\n')
             for key in self.S_I:
-                f.write('{}: {}\n'.format(key, self.S_I[key]))
+                f.write('{} {}\n'.format(key, self.S_I[key]))
             f.write('\n')
 
             f.write('## K BOX\n')
             for key in self.K:
-                f.write('{}: {}\n'.format(key, self.K[key]))
+                f.write('{} {}\n'.format(key, self.K[key]))
             f.write('\n')
 
             f.write('## K_I BOX\n')
-            for key in self.K:
-                f.write('{}: {}\n'.format(key, self.K_I[key]))
+            for key in self.K_I:
+                f.write('{} {}\n'.format(key, self.K_I[key]))
             f.write('\n')
+
+    def load_cipher(self, file_name):
+        """
+        Load a cipher in the path file_name.
+
+        Parameters
+        ----------
+        file_name : string
+            full path to the file
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        FileNotFoundError
+            the file file_name do not exist
+        """
+        file_name = Path(file_name)
+
+        if not file_name.is_file():
+            raise FileNotFoundError('File {} do not exist.'.format(file_name))
+        else:
+            with open(file_name, 'r') as f:
+                content = f.read().splitlines()
+
+        i = 0
+        while(i < len(content)):
+            if(content[i] == "## P BOX"):
+                i += 1
+                self.P = []
+                while(content[i] != ''):
+                    tmp = []
+                    for b in content[i].split(' '):
+                        tmp.append(int(b))
+                    self.P.append(tmp)
+                    i += 1
+            elif(content[i] == "## P_I BOX"):
+                i += 1
+                self.P_I = []
+                while(content[i] != ''):
+                    tmp = []
+                    for b in content[i].split(' '):
+                        tmp.append(int(b))
+                    self.P_I.append(tmp)
+                    i += 1
+            elif(content[i] == "## S BOX"):
+                i += 1
+                self.S = {}
+                while(content[i] != ''):
+                    a, b = content[i].split(' ')
+                    self.S[int(a)] = int(b)
+                    i += 1
+            elif(content[i] == "## S_I BOX"):
+                i += 1
+                self.S_I = {}
+                while(content[i] != ''):
+                    a, b = content[i].split(' ')
+                    self.S_I[int(a)] = int(b)
+                    i += 1
+            elif(content[i] == "## K BOX"):
+                i += 1
+                self.K = {}
+                while(content[i] != ''):
+                    a, b = content[i].split(' ')
+                    self.K[int(a)] = int(b)
+                    i += 1
+            elif(content[i] == "## K_I BOX"):
+                i += 1
+                self.K_I = {}
+                while(content[i] != ''):
+                    a, b = content[i].split(' ')
+                    self.K_I[int(a)] = int(b)
+                    i += 1
+            else:
+                i += 1
 
     def encrypt(self, data_t, key_t):
         """
