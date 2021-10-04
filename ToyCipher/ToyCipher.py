@@ -31,6 +31,10 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Make sure a list or string only contain octals
     __check_input(data, key):
         Check that the inputs are correct (data and key)
+    __load_p_box(orig_indent, content, box):
+        Load the P box from file
+    __load_s_box(orig_indent, content, box):
+        Load the S and Key box from file
     save_currect_cipher(file_name):
         Save the current cipher to a file in position file_name
     load_cipher(file_name):
