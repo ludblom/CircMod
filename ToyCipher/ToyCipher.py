@@ -45,7 +45,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         decrypt the data
     """
 
-    def __init__(self, block_len=6, rounds=3):
+    def __init__(self, block_len=1, rounds=3):
         """
         Init default parameters.
 
