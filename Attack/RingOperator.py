@@ -4,6 +4,8 @@
 
 from .Matrix import Matrix
 
+import copy
+
 
 class Ring(Matrix):
     """
@@ -30,8 +32,8 @@ class Ring(Matrix):
         preform the ring operator
     dot(a, b):
         preform the dot product using ring
-    xor(a, b):
-        preform xor on two matrices
+    gamma(a, P_a):
+        determine gamma substitution
     """
 
     def __init__(self, N=5, k=2):
@@ -191,3 +193,28 @@ class Ring(Matrix):
         a_ring_b = self.int_to_binary(self.ring(a, b), self.N)
         a_dot_b = self.matrix_sum(a_plus_b, a_ring_b)
         return self.binary_to_int(a_dot_b)
+
+    def gamma(self, a, P_a):
+        """
+        Preform gamma.
+
+        Parameters
+        ----------
+        a : int or list of int
+        P_a : list of int
+
+        Returns
+        -------
+        int
+            gamma
+        """
+        P = copy.deepcopy(P_a)
+        if type(a) == int:
+            a = self.int_to_binary(a, self.N)
+        for i in range(len(a)):
+            for j in range(len(P[0])):
+                P[i][j] = P[i][j]*a[i]
+        gamma = self.ring(self.binary_to_int(P[0]), self.binary_to_int(P[1]))
+        for i in range(2, len(P)):
+            gamma = self.ring(gamma, self.binary_to_int(P[i]))
+        return gamma
