@@ -195,21 +195,22 @@ class TestToyCipher(unittest.TestCase):
     def test_enc_dec(self):
         """Test if encrypting and decrypting a string is equal."""
         log = logging.getLogger("TestEncDec")
-        for i in range(100):
-            c = ToyCipher()
-            msg = []
-            key = []
-            for i in range(c.block_len):
-                msg.append(random.randint(0, 7))
-                key.append(random.randint(0, 7))
-            enc = c.encrypt(msg, key)
-            dec = c.decrypt(enc, key)
-            log.debug("msg: {}, enc: {}, dec: {}".format(msg, enc, dec))
-            self.assertEqual(
-                msg,
-                dec,
-                "msg: {}, dec: {}, key: {}".format(msg, dec, key)
-            )
+        for bl in [1,3,5,7]:
+            for i in range(25):
+                c = ToyCipher(block_len=bl)
+                msg = []
+                key = []
+                for i in range(c.block_len):
+                    msg.append(random.randint(0, 7))
+                    key.append(random.randint(0, 7))
+                enc = c.encrypt(msg, key)
+                dec = c.decrypt(enc, key)
+                log.debug("msg: {}, enc: {}, dec: {}".format(msg, enc, dec))
+                self.assertEqual(
+                    msg,
+                    dec,
+                    "msg: {}, dec: {}, key: {}".format(msg, dec, key)
+                )
 
     def test_malformed_data(self):
         """Test so malformed input is catched."""
