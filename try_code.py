@@ -7,7 +7,7 @@ import copy
 
 
 def attack(N, k):
-    t = ToyCipher(block_len=int(N/3))
+    t = ToyCipher(block_len=N)
     r = Ring(N=N, k=k)
 
     print(r.lam(t.P))
@@ -22,4 +22,4 @@ def attack(N, k):
 
 
 if __name__ == '__main__':
-    attack(6, 2)
+    attack(3, 1)
