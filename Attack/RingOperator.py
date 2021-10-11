@@ -33,7 +33,11 @@ class Ring(Matrix):
     dot(a, b):
         preform the dot product using ring
     gamma(a, P_a):
-        determine gamma substitution
+        determine gamma substitution using ring
+    gamma_xor(a, P_a):
+        determine gamma substitution using xor
+    lamb(P):
+        preform the lambda calculation
     """
 
     def __init__(self, N=5, k=2):
@@ -186,6 +190,19 @@ class Ring(Matrix):
         return self.binary_to_int(a_dot_b)
 
     def xor(self, a, b):
+        """
+        Preform xor on two lists.
+
+        Parameters
+        ----------
+        a : list of int
+        b : list of int
+
+        Returns
+        -------
+        list of int
+            a XOR b
+        """
         if len(a) != len(b):
             raise SyntaxError("Lists not of equal length.")
         xor_t = []
@@ -195,7 +212,7 @@ class Ring(Matrix):
 
     def gamma(self, a, P_a):
         """
-        Preform gamma.
+        Preform gamma using ring.
 
         Parameters
         ----------
@@ -218,15 +235,9 @@ class Ring(Matrix):
             gamma = self.ring(gamma, self.binary_to_int(P[i]))
         return gamma
 
-    def lam(self, P):
-        l = []
-        for i in range(2**self.N):
-            l.append(self.gamma(i, P))
-        return l
-
     def gamma_xor(self, a, P_a):
         """
-        Preform gamma.
+        Preform gamma using xor.
 
         Parameters
         ----------
@@ -248,3 +259,22 @@ class Ring(Matrix):
         for i in range(2, len(P)):
             gamma = self.xor(gamma, P[i])
         return self.binary_to_int(gamma)
+
+    def lamb(self, P):
+        """
+        Preform the lambda operation.
+
+        Parameters
+        ----------
+        P : list of int
+            the P box
+
+        Returns
+        -------
+        list of int
+        """
+        l = []
+        for i in range(2**self.N):
+            l.append(self.gamma(i, P))
+        return l
+
