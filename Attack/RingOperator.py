@@ -53,15 +53,6 @@ class Ring(Matrix):
         self.Bex = self.generate_Bex()
         super().__init__()
 
-    def __str__(self):
-        """Print out B_o well formatted."""
-        string = ''
-        for j in self.Bo:
-            for i in j:
-                string += '{} '.format(str(i))
-            string += '\n'
-        return string
-
     def generate_Bex(self):
         """
         Generate all B_ex matrices by using the B_o matrix.

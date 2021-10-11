@@ -68,49 +68,6 @@ class PBox:
             P_I = self.calculate_inverse(P_tmp)
         return P, P_I
 
-    def convert_oct_to_binary(self, data):
-        """
-        Convert a list of octals to list of ints.
-
-        Parameters
-        ----------
-        data : list of int
-            a list of ints representing octals
-
-        Returns
-        -------
-        list of int
-            the binary representation of the octals
-        """
-        bin_data = []
-        # Convert to string binary of size 3 (octal)
-        bin_tmp = [format(i, '03b') for i in data]
-        # Convert the strings to int
-        for bin_part in bin_tmp:
-            for b in bin_part:
-                bin_data.append(int(b))
-        return bin_data
-
-    def convert_binary_to_oct(self, data):
-        """
-        Convert a list of binary ints to octals.
-
-        Parameters
-        ----------
-        data : list of int
-            a list of 1 and 0 ints
-
-        Returns
-        -------
-        list of int
-            list of octals
-        """
-        oct_data = []
-        for i in range(0, len(data), 3):
-            tmp = [str(j) for j in data[i:i+3]]
-            oct_data.append(int('0b{}'.format(''.join(tmp)), 2))
-        return oct_data
-
     def p_box_multiplication(self, data, encrypt):
         """
         Preform multiplication of data on P or P_I.
