@@ -60,24 +60,24 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         self.rounds = rounds
         super().__init__()
 
-    def __octals(self, octs):
+    def __binary(self, b):
         """
-        Make sure a list or string only is ocatals.
+        Make sure a list or string only is binary.
 
         Parameters
         ----------
-        octs : list of int
+        b : list of int
 
         Returns
         -------
         bool
-            True if between 0 and 7, otherwise False
+            True if between 0 and 1, otherwise False
         """
-        if(type(octs) != list and type(octs) != str):
+        if(type(b) != list and type(b) != str):
             return False
 
-        for o in octs:
-            if int(o) < 0 or int(o) > 7:
+        for o in b:
+            if int(o) < 0 or int(o) > 1:
                 return False
         return True
 
@@ -87,10 +87,10 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         Parameters
         ----------
-        data : list or string (octals)
-            list or string of octals to encrypt
-        key : list or string (octals)
-            list or string of octals for a key
+        data : list or string (binary)
+            list or string of binary to encrypt
+        key : list or string (binary)
+            list or string of binary for a key
 
         Returns
         -------
@@ -110,11 +110,11 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         if(len(key) != self.block_len):
             raise ValueError('Key is not of correct size.')
 
-        if(not self.__octals(data)):
-            raise TypeError('Data is not a list, string or not only octals.')
+        if(not self.__binary(data)):
+            raise TypeError("Data is not a list, string or not only 0 or 1's.")
 
-        if(not self.__octals(key)):
-            raise TypeError('Key is not a list, string or not only octals.')
+        if(not self.__binary(key)):
+            raise TypeError("Data is not a list, string or not only 0 or 1's.")
 
     def __load_p_box(self, orig_indent, content, box):
         """

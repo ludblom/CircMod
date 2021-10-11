@@ -55,9 +55,9 @@ class Key:
         """
         K = {}
         K_I = {}
-        random_values = [i for i in range(8)]
+        random_values = [i for i in range(2**self.block_len)]
         random.shuffle(random_values)
-        for i in range(8):
+        for i in range(2**self.block_len):
             K[i] = random_values[i]
             K_I[random_values[i]] = i
         return K, K_I
@@ -93,15 +93,9 @@ class Key:
         list : int
             the new key round
         """
-        tmp_key = []
-        for i in range(self.block_len):
-            if encrypt:
-                tmp_key.append(self.K[key[i]])
-            else:
-                tmp_key.append(self.K_I[key[i]])
+        if encrypt:
+            tmp_key = self.int_to_binary(self.K[self.binary_to_int(key)], self.block_len)
+        else:
+            tmp_key = self.int_to_binary(self.K_I[self.binary_to_int(key)], self.block_len)
 
-        # Reverse the order
-        for i in range(len(tmp_key)):
-            key[i] = tmp_key[::-1][i]
-
-        return key
+        return tmp_key[::-1]

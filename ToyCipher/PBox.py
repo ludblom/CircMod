@@ -39,17 +39,16 @@ class PBox:
         P_I : list of int
             inverse matrix of P
         """
-        self.P, self.P_I = self.permutation_box(self.block_len)
+        self.P, self.P_I = self.permutation_box()
         super().__init__()
 
-    def permutation_box(self, num_of_octals):
+    def permutation_box(self):
         """
         Create the permutation and inverse permutation boxes.
 
         Parameters
         ----------
-        num_of_octals : int
-            the number octals the matrix should have
+        None
 
         Returns
         -------
@@ -59,9 +58,9 @@ class PBox:
         P_I = []
         while P_I == []:
             P_tmp = []
-            for _ in range(num_of_octals*3):
+            for _ in range(self.block_len):
                 tmp = []
-                for _ in range(num_of_octals*3):
+                for _ in range(self.block_len):
                     rand = random.randint(0, 1)
                     tmp.append(rand)
                 P_tmp.append(tmp)
@@ -123,9 +122,8 @@ class PBox:
         encrypt : boolean
             True in encryption and False if decryption
         """
-        bin_data = self.convert_oct_to_binary(data)
         if encrypt:
-            res_data = self.matrix_mul_row_column(bin_data, self.P)
+            res_data = self.matrix_mul_row_column(data, self.P)
         else:
-            res_data = self.matrix_mul_row_column(bin_data, self.P_I)
-        return self.convert_binary_to_oct(res_data)
+            res_data = self.matrix_mul_row_column(data, self.P_I)
+        return res_data

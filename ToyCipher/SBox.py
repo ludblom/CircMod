@@ -53,10 +53,10 @@ class SBox:
         """
         S = {}
         S_I = {}
-        random_values = [i for i in range(8)]
-        sorted_values = [i for i in range(8)]
+        random_values = [i for i in range(2**block_len)]
+        sorted_values = [i for i in range(2**block_len)]
         random.shuffle(random_values)
-        for i in range(len(sorted_values)):
+        for i in range(2**block_len):
             S[sorted_values[i]] = random_values[i]
             S_I[random_values[i]] = sorted_values[i]
         return S, S_I
@@ -70,10 +70,9 @@ class SBox:
         data : the data to substitute
         encrypt : True if we are to encrypt, False if decryption
         """
-        for i in range(self.block_len):
-            if(encrypt):
-                data[i] = self.S[data[i]]
-            else:
-                data[i] = self.S_I[data[i]]
+        if(encrypt):
+            data = self.S[self.binary_to_int(data)]
+        else:
+            data = self.S_I[self.binary_to_int(data)]
 
         return data
