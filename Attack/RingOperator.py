@@ -194,6 +194,14 @@ class Ring(Matrix):
         a_dot_b = self.matrix_sum(a_plus_b, a_ring_b)
         return self.binary_to_int(a_dot_b)
 
+    def xor(self, a, b):
+        if len(a) != len(b):
+            raise SyntaxError("Lists not of equal length.")
+        xor_t = []
+        for i in range(len(a)):
+            xor_t.append(a[i]^b[i])
+        return xor_t
+
     def gamma(self, a, P_a):
         """
         Preform gamma.
@@ -218,3 +226,34 @@ class Ring(Matrix):
         for i in range(2, len(P)):
             gamma = self.ring(gamma, self.binary_to_int(P[i]))
         return gamma
+
+    def lam(self, P):
+        l = []
+        for i in range(2**self.N):
+            l.append(self.gamma(i, P))
+        return l
+
+    def gamma_xor(self, a, P_a):
+        """
+        Preform gamma.
+
+        Parameters
+        ----------
+        a : int or list of int
+        P_a : list of int
+
+        Returns
+        -------
+        int
+            gamma
+        """
+        P = copy.deepcopy(P_a)
+        if type(a) == int:
+            a = self.int_to_binary(a, self.N)
+        for i in range(len(a)):
+            for j in range(len(P[0])):
+                P[i][j] = P[i][j]*a[i]
+        gamma = self.xor(P[0], P[1])
+        for i in range(2, len(P)):
+            gamma = self.xor(gamma, P[i])
+        return self.binary_to_int(gamma)

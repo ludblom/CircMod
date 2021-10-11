@@ -175,6 +175,7 @@ class Matrix:
     def matrix_mul_row_column(self, x, M):
         """
         Multiplicate [] with [[..]..] matrix.
+        TODO: Change to use XOR and Ring
 
         Parameters
         ----------
