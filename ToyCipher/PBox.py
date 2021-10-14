@@ -42,6 +42,29 @@ class PBox:
         self.P, self.P_I = self.permutation_box()
         super().__init__()
 
+    def __check_linearity(self, P_tmp):
+        """
+        Check that a matrix is linear.
+
+        Parameters
+        ----------
+        P_tmp : list of int
+
+        Returns
+        -------
+        bool
+        """
+        l = self.xor(P_tmp[0], P_tmp[1])
+        for i in range(2, len(P_tmp)):
+            l = self.xor(l, P_tmp[i])
+
+        zero = [0 for i in range(len(P_tmp))]
+
+        if l == zero:
+            return False
+
+        return True
+
     def permutation_box(self):
         """
         Create the permutation and inverse permutation boxes.
@@ -66,6 +89,9 @@ class PBox:
                 P_tmp.append(tmp)
             P = copy.deepcopy(P_tmp)
             P_I = self.calculate_inverse(P_tmp)
+            linear = self.__check_linearity(P_tmp)
+            if(not linear):
+                P_I = []
         return P, P_I
 
     def p_box_multiplication(self, data, encrypt):

@@ -35,7 +35,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Load the P box from file
     __load_s_box(orig_indent, content, box):
         Load the S and Key box from file
-    save_currect_cipher(file_name):
+    save_cipher(file_name):
         Save the current cipher to a file in position file_name
     load_cipher(file_name):
         Load a cipher in the path file_name
@@ -202,7 +202,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             i += 1
         return i
 
-    def save_currect_cipher(self, file_name, hard=False):
+    def save_cipher(self, file_name, hard=False):
         """
         Save the current cipher to a text file.
 
@@ -307,7 +307,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
                 i += 1
 
         # Convert the column len to octal representation
-        self.block_len = len(self.P)/3
+        self.block_len = len(self.P)
 
     def encrypt(self, data_t, key_t):
         """

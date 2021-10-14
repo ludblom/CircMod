@@ -27,6 +27,7 @@ class Matrix:
     mul_row(M, x, y):
     mul_row_column(x, M):
     calculate_inverse(A):
+    xor(a, b):
     """
 
     def int_to_binary(self, i, l):
@@ -232,3 +233,29 @@ class Matrix:
                     A = self.matrix_mul_row(A, i, j)
                     I = self.matrix_mul_row(I, i, j)
         return I
+
+    def xor(self, a, b):
+        """
+        Xor two lists togother.
+
+        Parameters
+        ----------
+        a : list of int
+        b : list of int
+
+        Returns
+        -------
+        list of int
+            a XOR b
+
+        Raises
+        ------
+        SyntaxError
+            If lists are not of equal length
+        """
+        if len(a) != len(b):
+            raise SyntaxError("Lists not of equal length.")
+        c = []
+        for i in range(len(a)):
+            c.append(a[i]^b[i])
+        return c

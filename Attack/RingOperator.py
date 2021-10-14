@@ -189,27 +189,6 @@ class Ring(Matrix):
         a_dot_b = self.matrix_sum(a_plus_b, a_ring_b)
         return self.binary_to_int(a_dot_b)
 
-    def xor(self, a, b):
-        """
-        Preform xor on two lists.
-
-        Parameters
-        ----------
-        a : list of int
-        b : list of int
-
-        Returns
-        -------
-        list of int
-            a XOR b
-        """
-        if len(a) != len(b):
-            raise SyntaxError("Lists not of equal length.")
-        xor_t = []
-        for i in range(len(a)):
-            xor_t.append(a[i]^b[i])
-        return xor_t
-
     def gamma(self, a, P_a):
         """
         Preform gamma using ring.
