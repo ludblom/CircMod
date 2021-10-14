@@ -2,6 +2,8 @@
 
 """Matrix modification classes."""
 
+import copy
+
 
 class Matrix:
     """
@@ -195,19 +197,20 @@ class Matrix:
             row_col.append(tmp)
         return row_col
 
-    def calculate_inverse(self, A):
+    def calculate_inverse(self, A_t):
         """
         Calculate the inverse of A.
 
         Parameters
         ----------
-        A : list of int
+        A_t : list of int
 
         Returns
         -------
         list of int
-            the inverse of A
+            the inverse of A_t
         """
+        A = copy.deepcopy(A_t)
         I = self.get_identity(len(A))
         foundPivot = False
         for i in range(len(A)):
