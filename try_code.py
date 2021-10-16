@@ -2,6 +2,8 @@
 
 from Attack.RingOperator import Ring
 from ToyCipher.ToyCipher import ToyCipher
+from Attack.HiddenSum import HiddenSum
+from Attack.Matrix import Matrix
 
 import copy
 
@@ -36,7 +38,21 @@ def trying():
     print("S: " + str(t.S))
     print("S_I " + str(t.S_I))
 
+def attacking():
+    m = Matrix()
+    hs = HiddenSum()
+    t = ToyCipher(block_len=6, rounds=5)
+    t.load_cipher("tmp_cipher.txt")
+    for i in range(64):
+        c = t.encrypt(m.int_to_binary(i, 6), "000000")
+        ret = hs.attack(c, "000000")
+        if ret == []:
+            print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
+        else:
+            ret_int = m.binary_to_int(ret)
+            print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
+
 if __name__ == '__main__':
     # for i in range(10):
     #     attack(3, 1)
-    trying()
+    attacking()

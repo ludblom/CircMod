@@ -34,16 +34,13 @@ class HiddenSum:
         b = self.lambdaInv_six(v[3:])
         return a+b
 
-    def attack(self, m):
-        k = "000000"
+    def attack(self, c, k):
         t = ToyCipher(block_len=6, rounds=5)
         t.load_cipher("tmp_cipher.txt")
 
         zero = [0 for i in range(6)]
         zeroc = t.encrypt(zero, k)
 
-        c = t.encrypt(m, k)
-        print("Cipher text: " + str(c))
         mat = Matrix()
         I = mat.get_identity(6)
 
@@ -55,10 +52,11 @@ class HiddenSum:
         lCaz2 = [ [ (lCaz[i][j]^lzeroc[j]) for j in range(6) ] for i in range(6) ]
         lCaz2Inv = mat.calculate_inverse(lCaz2)
 
+        if(lCaz2Inv == []):
+            return []
+
         cc = self.vprime_six(c)
 
         mm = mat.matrix_mul_row_column([cc[i]^lzeroc[i] for i in range(6)], lCaz2Inv)
 
-        mc = self.vprimeInv_six(mm)
-
-        print("Decrypted without key: " + str(mc))
+        return self.vprimeInv_six(mm)

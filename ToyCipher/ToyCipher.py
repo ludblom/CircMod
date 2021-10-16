@@ -31,7 +31,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Make sure a list or string only contain octals
     __check_input(data, key):
         Check that the inputs are correct (data and key)
-    __load_p_box(orig_indent, content, box):
+    __load_p_box(orig_indent, content):
         Load the P box from file
     __load_s_box(orig_indent, content, box):
         Load the S and Key box from file
@@ -116,7 +116,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         if(not self.__binary(key)):
             raise TypeError("Data is not a list, string or not only 0 or 1's.")
 
-    def __load_p_box(self, orig_indent, content, box):
+    def __load_p_box(self, orig_indent, content):
         """
         Load the P-box.
 
@@ -126,13 +126,11 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             how far have we already gone
         content : list of str
             the file with the data
-        box : str
-            P or P_I that is copied over
 
         Returns
         -------
         int
-            the length of P or P_I
+            the length of P
 
         Raises
         ------
@@ -140,19 +138,13 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         """
         i = 1
 
-        if(box == 'P'):
-            self.P = []
-        else:
-            self.P_I = []
+        self.P = []
 
         while(content[i+orig_indent] != ''):
             tmp = []
             for b in content[i+orig_indent].split(' '):
                 tmp.append(int(b))
-            if(box == 'P'):
-                self.P.append(tmp)
-            else:
-                self.P_I.append(tmp)
+            self.P.append(tmp)
             i += 1
         return i
 
@@ -167,12 +159,12 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         content : list of str
             the file with the data
         box : str
-            S, S_I, K or K_I that is copied over
+            S or K that is copied over
 
         Returns
         -------
         int
-            the length of S, S_I, K or K_I
+            the length of S or K
 
         Raises
         ------
@@ -182,23 +174,15 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         if(box == "S"):
             self.S = {}
-        elif(box == "S_I"):
-            self.S_I = {}
-        elif(box == "K"):
-            self.K = {}
         else:
-            self.K_I = {}
+            self.K = {}
 
         while(content[i+orig_indent] != ''):
             a, b = content[i+orig_indent].split(' ')
             if(box == "S"):
                 self.S[int(a)] = int(b)
-            elif(box == "S_I"):
-                self.S_I[int(a)] = int(b)
-            elif(box == "K"):
-                self.K[int(a)] = int(b)
             else:
-                self.K_I[int(a)] = int(b)
+                self.K[int(a)] = int(b)
             i += 1
         return i
 
@@ -236,30 +220,14 @@ class ToyCipher(Matrix, SBox, PBox, Key):
                 f.write('\n')
             f.write('\n')
 
-            f.write('## P_I BOX\n')
-            for row in self.P_I:
-                f.write(' '.join([str(i) for i in row]))
-                f.write('\n')
-            f.write('\n')
-
             f.write('## S BOX\n')
             for key in self.S:
                 f.write('{} {}\n'.format(key, self.S[key]))
             f.write('\n')
 
-            f.write('## S_I BOX\n')
-            for key in self.S_I:
-                f.write('{} {}\n'.format(key, self.S_I[key]))
-            f.write('\n')
-
             f.write('## K BOX\n')
             for key in self.K:
                 f.write('{} {}\n'.format(key, self.K[key]))
-            f.write('\n')
-
-            f.write('## K_I BOX\n')
-            for key in self.K_I:
-                f.write('{} {}\n'.format(key, self.K_I[key]))
             f.write('\n')
 
     def load_cipher(self, file_name):
@@ -292,19 +260,18 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         i = 0
         while(i < len(content)):
             if(content[i] == "## P BOX"):
-                i += self.__load_p_box(i, content, 'P')
-            elif(content[i] == "## P_I BOX"):
-                i += self.__load_p_box(i, content, 'P_I')
+                i += self.__load_p_box(i, content)
             elif(content[i] == "## S BOX"):
                 i += self.__load_s_box(i, content, 'S')
-            elif(content[i] == "## S_I BOX"):
-                i += self.__load_s_box(i, content, 'S_I')
             elif(content[i] == "## K BOX"):
                 i += self.__load_s_box(i, content, 'K')
-            elif(content[i] == "## K_I BOX"):
-                i += self.__load_s_box(i, content, 'K_I')
             else:
                 i += 1
+
+        # Load the inverse boxes
+        self.P_I = self.calculate_inverse(self.P)
+        self.S_I = {v: k for k, v in self.S.items()}
+        self.K_I = {v: k for k, v in self.K.items()}
 
         # Convert the column len to octal representation
         self.block_len = len(self.P)
