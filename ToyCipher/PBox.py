@@ -18,12 +18,10 @@ class PBox:
 
     Methods
     -------
+    __check_linearity(P_tmp):
+        Check linearity
     permutation_box(num_of_octals):
         Create the encryption (P) and decryption (P_I) permutation matrix
-    convert_oct_to_binary(data):
-        Convert octals to binary
-    convert_binary_to_oct(data):
-        Convert binary to octals
     p_box_multiplication(data, encrypt):
         Preform row multiplication
     """

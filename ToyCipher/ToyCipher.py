@@ -27,8 +27,8 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
     Methods
     -------
-    __octals(octs):
-        Make sure a list or string only contain octals
+    __binary(b):
+        Make sure a list or string only contain binary
     __check_input(data, key):
         Check that the inputs are correct (data and key)
     __load_p_box(orig_indent, content):
@@ -39,9 +39,9 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Save the current cipher to a file in position file_name
     load_cipher(file_name):
         Load a cipher in the path file_name
-    encrypt(data, key):
+    encrypt(data_t, key_t):
         encrypt the data
-    decrypt(data, key):
+    decrypt(data_t, key_t):
         decrypt the data
     """
 

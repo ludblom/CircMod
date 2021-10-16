@@ -43,9 +43,10 @@ def attacking():
     hs = HiddenSum()
     t = ToyCipher(block_len=6, rounds=5)
     t.load_cipher("tmp_cipher.txt")
+
     for i in range(64):
-        c = t.encrypt(m.int_to_binary(i, 6), "000000")
-        ret = hs.attack(c, "000000")
+        c = t.encrypt(m.int_to_binary(i, 6), "110010")
+        ret = hs.attack(t, c)
         if ret == []:
             print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
         else:
@@ -53,6 +54,4 @@ def attacking():
             print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
 
 if __name__ == '__main__':
-    # for i in range(10):
-    #     attack(3, 1)
     attacking()
