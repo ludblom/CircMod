@@ -103,16 +103,16 @@ class HiddenSum:
         b = self.lambdaInv_six(v[3:])
         return a+b
 
-    def attack(self, t, c):
+    def attack(self, c, t):
         """
         Attack the cipher c using the ToyCipher t.
 
         Parameters
         ----------
-        t : class ToyCipher
-            the class ToyCipher used to encrypt c
         c : list of int
             list of binary ints
+        t : class ToyCipher
+            the class ToyCipher used to encrypt c
 
         Returns
         -------

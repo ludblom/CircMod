@@ -46,7 +46,7 @@ def attacking():
 
     for i in range(64):
         c = t.encrypt(m.int_to_binary(i, 6), "110010")
-        ret = hs.attack(t, c)
+        ret = hs.attack(c, t)
         if ret == []:
             print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
         else:

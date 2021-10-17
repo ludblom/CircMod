@@ -257,3 +257,9 @@ class Ring(Matrix):
             l.append(self.gamma(i, P))
         return l
 
+    def linearize(self, P):
+        new_P = []
+        l = self.lamb(P)
+        for p in P:
+            new_P.append(self.int_to_binary(l[self.binary_to_int(p)], self.N))
+        return new_P
