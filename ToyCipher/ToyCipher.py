@@ -45,7 +45,8 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         decrypt the data
     """
 
-    def __init__(self, block_len=6, rounds=3):
+    # TODO: Initiate a parameter to make the cipher 100% attackable (generating attackable S and P boxes).
+    def __init__(self, block_len=6, rounds=3, attackable=False):
         """
         Init default parameters.
 
