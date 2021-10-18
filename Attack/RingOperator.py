@@ -22,12 +22,12 @@ class Ring(Matrix):
 
     Methods
     -------
-    generate_Bex():
+    __generate_Bex():
         generate the B_ex matrices
+    __generate_Bo(N, k):
+        generate the B_o matrix
     get_Bx(b):
         generate the B_x[b]'th matrix
-    generate_Bo(N, k):
-        generate the B_o matrix
     ring(a, b):
         preform the ring operator
     dot(a, b):
@@ -53,11 +53,11 @@ class Ring(Matrix):
         """
         self.N = N
         self.k = k
-        self.Bo = self.generate_Bo(N, k)
-        self.Bex = self.generate_Bex()
+        self.Bo = self.__generate_Bo(N, k)
+        self.Bex = self.__generate_Bex()
         super().__init__()
 
-    def generate_Bex(self):
+    def __generate_Bex(self):
         """
         Generate all B_ex matrices by using the B_o matrix.
 
@@ -85,6 +85,32 @@ class Ring(Matrix):
             Bex.append(tmp)
 
         return Bex
+
+    def __generate_Bo(self, N, k):
+        """
+        Generate the B_o matrix in alpha notation.
+
+        Parameters
+        ----------
+        N : int
+            the size of the B_o matrix in binary
+        k : int
+            the size in x direction of the modifying matrix
+
+        Returns
+        -------
+        list of int
+            B_o in alpha notation
+        """
+        alpha = self.binary_to_int([1 for i in range(k)])
+        n = N-k
+        Bo = [[0 for i in range(n)] for i in range(n)]
+        for j in range(n):
+            for i in range(j+1, n):
+                Bo[j][i] = alpha
+                Bo[i][j] = alpha
+            alpha -= 1
+        return Bo
 
     def get_Bx(self, b):
         """
@@ -122,32 +148,6 @@ class Ring(Matrix):
                 I[i][self.N-self.k + j] = Bx[i][j]
 
         return I
-
-    def generate_Bo(self, N, k):
-        """
-        Generate the B_o matrix in alpha notation.
-
-        Parameters
-        ----------
-        N : int
-            the size of the B_o matrix in binary
-        k : int
-            the size in x direction of the modifying matrix
-
-        Returns
-        -------
-        list of int
-            B_o in alpha notation
-        """
-        alpha = self.binary_to_int([1 for i in range(k)])
-        n = N-k
-        Bo = [[0 for i in range(n)] for i in range(n)]
-        for j in range(n):
-            for i in range(j+1, n):
-                Bo[j][i] = alpha
-                Bo[i][j] = alpha
-            alpha -= 1
-        return Bo
 
     def ring(self, a, b):
         """
@@ -258,6 +258,17 @@ class Ring(Matrix):
         return l
 
     def linearize(self, P):
+        """
+        Linearize P.
+
+        Parameters
+        ----------
+        P : list of int
+
+        Returns
+        -------
+        list of int
+        """
         new_P = []
         l = self.lamb(P)
         for p in P:
