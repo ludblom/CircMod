@@ -38,7 +38,7 @@ def trying():
     print("S: " + str(t.S))
     print("S_I " + str(t.S_I))
 
-def attacking():
+def attacking_using_calderi():
     m = Matrix()
     hs = HiddenSum()
     t = ToyCipher(block_len=6, rounds=5)
@@ -53,5 +53,24 @@ def attacking():
             ret_int = m.binary_to_int(ret)
             print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
 
+def attack_creating_unsecure_cipher():
+    m = Matrix()
+    hs = HiddenSum()
+    t = ToyCipher(block_len=6, rounds=5)
+    r = Ring(N=6, k=2)
+    # Having P[i][j] we linearize it using lambda, ie create it
+    # by having a lookup table created by i = 000000 -> ... -> 111111
+    # and then replace each row of P with this new number
+    t.P = r.linearize(t.P)
+    t.P_I = m.calculate_inverse(t.P)
+
+    print("{} {}".format(t.P, t.P_I))
+
+    c = t.encrypt("011010", "101010")
+    cc = hs.attack(c, t)
+    print("{} {}".format("[0, 1, 1, 0, 1 ,0]", cc))
+
+
 if __name__ == '__main__':
-    attacking()
+    attack_creating_unsecure_cipher()
+    #attacking_using_calderi()
