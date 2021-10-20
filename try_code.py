@@ -5,6 +5,9 @@ from ToyCipher.ToyCipher import ToyCipher
 from Attack.HiddenSum import HiddenSum
 from Attack.Matrix import Matrix
 
+import threading
+from threading import *
+
 import copy
 
 
@@ -57,20 +60,59 @@ def attack_creating_unsecure_cipher():
     m = Matrix()
     hs = HiddenSum()
     t = ToyCipher(block_len=6, rounds=5)
+    t.load_cipher("tmp_cipher.txt")
     r = Ring(N=6, k=2)
     # Having P[i][j] we linearize it using lambda, ie create it
     # by having a lookup table created by i = 000000 -> ... -> 111111
     # and then replace each row of P with this new number
-    t.P = r.linearize(t.P)
-    t.P_I = m.calculate_inverse(t.P)
+    #t.P = r.linearize(t.P)
+    #t.P_I = m.calculate_inverse(t.P)
 
-    print("{} {}".format(t.P, t.P_I))
+    #print("{} {}".format(t.P, t.P_I))
 
-    c = t.encrypt("011010", "101010")
+    #c = t.encrypt("011010", "101010")
+    #cc = hs.attack(c, t)
+    #print("{} {}".format("[0, 1, 1, 0, 1 ,0]", cc))
+    print(r.lamb(t.P))
+
+def attack_all(PB):
+    m = Matrix()
+    hs = HiddenSum()
+    r = Ring(N=6, k=2)
+    t = ToyCipher(block_len=6, rounds=5)
+    t.P = PB
+    t.P_I = m.calculate_inverse(PB)
+    if t.P_I == []:
+        return -1
+    c = t.encrypt("101010", "101010")
     cc = hs.attack(c, t)
-    print("{} {}".format("[0, 1, 1, 0, 1 ,0]", cc))
+    if cc == "101010":
+        return t.P
+    else:
+        return -1
 
+def attack_all_p(m, a, b, c, d, e, f):
+    PB = []
+    PB.append(m.int_to_binary(a, 6))
+    PB.append(m.int_to_binary(b, 6))
+    PB.append(m.int_to_binary(c, 6))
+    PB.append(m.int_to_binary(d, 6))
+    PB.append(m.int_to_binary(e, 6))
+    PB.append(m.int_to_binary(f, 6))
+    ret = attack_all(PB)
+    if ret != -1:
+        print(ret)
 
 if __name__ == '__main__':
-    attack_creating_unsecure_cipher()
+    #attack_creating_unsecure_cipher()
     #attacking_using_calderi()
+    m = Matrix()
+    for a in range(4, 64):
+        for b in range(4, 64):
+            for c in range(4, 64):
+                for d in range(64):
+                    for e in range(64):
+                        for f in range(0, 64, 4):
+                            th = [threading.Thread(target=attack_all_p, args=(m, a, b, c, d, e, f+j)) for j in [i for i in range(4)]]
+                            st = [t.start() for t in th]
+                            jn = [t.join() for t in th]
