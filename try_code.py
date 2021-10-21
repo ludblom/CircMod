@@ -53,23 +53,6 @@ def attacking_using_calderi():
             ret_int = m.binary_to_int(ret)
             print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
 
-def attack_using_ring():
-    m = Matrix()
-    hs = HiddenSum()
-    r = Ring(N=6, k=2)
-    t = ToyCipher(block_len=6, rounds=5, attackable=True)
-    l = r.lamb(t.P)
-    li = r.lamb(t.P_I)
-
-    for i in range(64):
-        c = t.encrypt(m.int_to_binary(i, 6), "110010")
-        ret = hs.attack(m.int_to_binary(li[m.binary_to_int(c)], 6), t)
-        if ret == []:
-            print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
-        else:
-            ret_int = m.binary_to_int(ret)
-            print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
-
 def attack_creating_unsecure_cipher():
     m = Matrix()
     hs = HiddenSum()
@@ -116,6 +99,23 @@ def attack_all_p(m, a, b, c, d, e, f):
     ret = attack_all(PB)
     if ret != -1:
         print(ret)
+
+def attack_using_ring():
+    m = Matrix()
+    hs = HiddenSum()
+    r = Ring(N=6, k=2)
+    t = ToyCipher(block_len=6, rounds=5, attackable=True)
+    l = r.lamb(t.P)
+    li = r.lamb(t.P_I)
+
+    for i in range(64):
+        c = t.encrypt(m.int_to_binary(i, 6), "110010")
+        ret = hs.attack(m.int_to_binary(li[m.binary_to_int(c)], 6), t)
+        if ret == []:
+            print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
+        else:
+            ret_int = m.binary_to_int(ret)
+            print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
 
 if __name__ == '__main__':
     #attack_creating_unsecure_cipher()

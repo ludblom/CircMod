@@ -40,7 +40,7 @@ class Ring(Matrix):
         preform the lambda calculation
     """
 
-    def __init__(self, N=5, k=2):
+    def __init__(self, N=6, k=2):
         """
         Init default parameters.
 
@@ -296,4 +296,47 @@ class Ring(Matrix):
         # M[y][i] ^ M[x][i]
         a_i = self.binary_to_int(M[y])
         b_i = self.binary_to_int(M[x])
-        return self.int_to_binary(self.ring(a_i, b_i), 6)
+        M_t = self.int_to_binary(self.ring(a_i, b_i), len(M))
+        for i in range(len(M)):
+            M[y][i] = M_t[i]
+        return M
+
+    def calculate_inverse_ring(self, A_t):
+        """
+        Calculate the inverse of A.
+
+        Parameters
+        ----------
+        A_t : list of int
+
+        Returns
+        -------
+        list of int
+            the inverse of A_t
+        """
+        A = copy.deepcopy(A_t)
+        I = self.get_identity(len(A))
+        foundPivot = False
+        for i in range(len(A)):
+            if A[i][i] != 1:
+                for j in range(i+1, len(A)):
+                    if A[j][i] == 1:
+                        foundPivot = True
+                        A = self.row_shift(A, i, j)
+                        I = self.row_shift(I, i, j)
+                        break
+                if foundPivot == False:
+                    return []
+                else:
+                    foundPivot = False
+            for j in range(i+1, len(A)):
+                if A[j][i] == 1:
+                    A = self.matrix_mul_row_ring(A, i, j)
+                    I = self.matrix_mul_row_ring(I, i, j)
+
+        for i in range(len(A)-1, 0, -1):
+            for j in range(i-1, -1, -1):
+                if A[j][i] == 1:
+                    A = self.matrix_mul_row_ring(A, i, j)
+                    I = self.matrix_mul_row_ring(I, i, j)
+        return I

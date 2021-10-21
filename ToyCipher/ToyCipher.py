@@ -2,7 +2,7 @@
 
 """Create a ToyCipher."""
 
-from Attack.Matrix import Matrix
+from Attack.RingOperator import Ring
 from .SBox import SBox
 from .PBox import PBox
 from .Key import Key
@@ -12,7 +12,7 @@ import copy
 import os
 
 
-class ToyCipher(Matrix, SBox, PBox, Key):
+class ToyCipher(Ring, SBox, PBox, Key):
     """
     A class to represent the ToyCipher.
 
@@ -59,6 +59,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         """
         self.block_len = block_len
         self.rounds = rounds
+        self.attackable = attackable
         super().__init__()
 
     def __binary(self, b):
