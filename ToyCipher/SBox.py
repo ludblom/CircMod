@@ -44,7 +44,7 @@ class SBox:
         Parameters
         ----------
         block_len : int
-            the size of the block TODO Only possible with base 3? (aka octals)
+            the size of the block
 
         Returns
         -------

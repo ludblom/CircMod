@@ -274,3 +274,26 @@ class Ring(Matrix):
         for p in P:
             new_P.append(self.int_to_binary(l[self.binary_to_int(p)], self.N))
         return new_P
+
+    def matrix_mul_row_ring(self, M, x, y):
+        """
+        Multiplicate row x with y using ring.
+
+        Parameters
+        ----------
+        M : list of list of int
+            the matrix
+        x : int
+            x pos
+        y : int
+            y pos
+
+        Returns
+        -------
+        list of list of int
+            the new M
+        """
+        # M[y][i] ^ M[x][i]
+        a_i = self.binary_to_int(M[y])
+        b_i = self.binary_to_int(M[x])
+        return self.int_to_binary(self.ring(a_i, b_i), 6)

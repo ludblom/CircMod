@@ -5,9 +5,6 @@ from ToyCipher.ToyCipher import ToyCipher
 from Attack.HiddenSum import HiddenSum
 from Attack.Matrix import Matrix
 
-import threading
-from threading import *
-
 import copy
 
 
@@ -50,6 +47,23 @@ def attacking_using_calderi():
     for i in range(64):
         c = t.encrypt(m.int_to_binary(i, 6), "110010")
         ret = hs.attack(c, t)
+        if ret == []:
+            print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
+        else:
+            ret_int = m.binary_to_int(ret)
+            print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
+
+def attack_using_ring():
+    m = Matrix()
+    hs = HiddenSum()
+    r = Ring(N=6, k=2)
+    t = ToyCipher(block_len=6, rounds=5, attackable=True)
+    l = r.lamb(t.P)
+    li = r.lamb(t.P_I)
+
+    for i in range(64):
+        c = t.encrypt(m.int_to_binary(i, 6), "110010")
+        ret = hs.attack(m.int_to_binary(li[m.binary_to_int(c)], 6), t)
         if ret == []:
             print("{}\t{}\t{}".format(i, m.binary_to_int(c), "Error"))
         else:
@@ -106,13 +120,15 @@ def attack_all_p(m, a, b, c, d, e, f):
 if __name__ == '__main__':
     #attack_creating_unsecure_cipher()
     #attacking_using_calderi()
-    m = Matrix()
-    for a in range(4, 64):
-        for b in range(4, 64):
-            for c in range(4, 64):
-                for d in range(64):
-                    for e in range(64):
-                        for f in range(0, 64, 4):
-                            th = [threading.Thread(target=attack_all_p, args=(m, a, b, c, d, e, f+j)) for j in [i for i in range(4)]]
-                            st = [t.start() for t in th]
-                            jn = [t.join() for t in th]
+    # m = Matrix()
+    # for a in range(64):
+    #     print("a: " + str(a))
+    #     for b in range(64):
+    #         print("b: " + str(b))
+    #         for c in range(64):
+    #             print("c: " + str(c))
+    #             for d in range(64):
+    #                 for e in range(64):
+    #                     for f in range(64):
+    #                         attack_all_p(m, a, b, c, d, e, f)
+    attack_using_ring()
