@@ -117,6 +117,10 @@ def attack_using_ring():
             ret_int = m.binary_to_int(ret)
             print("{}\t{}\t{}\t{}".format(i, m.binary_to_int(c), ret_int, i==ret_int))
 
+def save_a_cipher():
+    t = ToyCipher(block_len=3, rounds=1)
+    t.save_cipher("attack_me.txt", hard=True)
+
 if __name__ == '__main__':
     #attack_creating_unsecure_cipher()
     #attacking_using_calderi()
@@ -131,4 +135,4 @@ if __name__ == '__main__':
     #                 for e in range(64):
     #                     for f in range(64):
     #                         attack_all_p(m, a, b, c, d, e, f)
-    attack_using_ring()
+    save_a_cipher()

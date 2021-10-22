@@ -257,24 +257,6 @@ class Ring(Matrix):
             l.append(self.gamma(i, P))
         return l
 
-    def linearize(self, P):
-        """
-        Linearize P.
-
-        Parameters
-        ----------
-        P : list of int
-
-        Returns
-        -------
-        list of int
-        """
-        new_P = []
-        l = self.lamb(P)
-        for p in P:
-            new_P.append(self.int_to_binary(l[self.binary_to_int(p)], self.N))
-        return new_P
-
     def matrix_mul_row_ring(self, M, x, y):
         """
         Multiplicate row x with y using ring.
