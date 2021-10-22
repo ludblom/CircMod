@@ -239,23 +239,30 @@ class Ring(Matrix):
             gamma = self.xor(gamma, P[i])
         return self.binary_to_int(gamma)
 
-    def lamb(self, P):
+    def phi(self, P):
         """
-        Preform the lambda operation.
+        Calculate phi.
 
         Parameters
         ----------
-        P : list of int
-            the P box
+        P : list of list of int
+            The P box
 
         Returns
         -------
         list of int
+            Phi
         """
-        l = []
+        phi = [0 for i in range(2**self.N)]
+
         for i in range(2**self.N):
-            l.append(self.gamma(i, P))
-        return l
+            ring = self.gamma(i, P)
+            xor = self.gamma_xor(i, P)
+            if ring != xor:
+                phi[ring] = xor
+            else:
+                phi[ring] = ring
+        return phi
 
     def matrix_mul_row_ring(self, M, x, y):
         """
@@ -275,7 +282,6 @@ class Ring(Matrix):
         list of list of int
             the new M
         """
-        # M[y][i] ^ M[x][i]
         a_i = self.binary_to_int(M[y])
         b_i = self.binary_to_int(M[x])
         M_t = self.int_to_binary(self.ring(a_i, b_i), len(M))

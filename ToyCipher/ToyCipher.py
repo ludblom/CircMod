@@ -284,19 +284,19 @@ class ToyCipher(Ring, SBox, PBox, Key):
 
         Parameters
         ----------
-        data_t : list or string (octals)
-            list or string of octals to encrypt
-        key_t : list or string (octals)
-            list or string of octals for a key
+        data_t : list or string (binary)
+            list or string of binary to encrypt
+        key_t : list or string (binary)
+            list or string of binary for a key
 
         Returns
         -------
-        List of encrypted octals
+        List of int
 
         Raises
         ------
         ValueError
-            when data or key is not octals
+            when data or key is not binary
         TypeError
             when data or key is not list or string
             when the length of data or key is not correct
@@ -315,13 +315,13 @@ class ToyCipher(Ring, SBox, PBox, Key):
         if(type(key) == str):
             key = [int(i) for i in key]
 
-        self.xor_data_key(data, key)
+        data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
-            self.preform_data_substitution(data, True)
+            data = self.preform_data_substitution(data, True)
             data = self.p_box_multiplication(data, True)
-            self.new_key_round(key, True)
-            self.xor_data_key(data, key)
+            key = self.new_key_round(key, True)
+            data = self.xor_data_key(data, key)
 
         return data
 
@@ -331,20 +331,19 @@ class ToyCipher(Ring, SBox, PBox, Key):
 
         Parameters
         ----------
-        data : list or string (octals)
-            list or string of octals to decrypt
-        key : list or string (octals)
-            list or string of octals for a key
+        data : list or string (binary)
+            list or string of binary to decrypt
+        key : list or string (binary)
+            list or string of binary for a key
 
         Returns
         -------
-        list
-            Decrypted octals
+        list of int
 
         Raises
         ------
         ValueError
-            when data or key is not octals
+            when data or key is not binary
         TypeError
             when data or key is not list or string
             when the length of data or key is not correct
@@ -364,14 +363,14 @@ class ToyCipher(Ring, SBox, PBox, Key):
             key = [int(i) for i in key]
 
         for _ in range(self.rounds):
-            self.new_key_round(key, True)
+            key = self.new_key_round(key, True)
 
-        self.xor_data_key(data, key)
+        data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
             data = self.p_box_multiplication(data, False)
-            self.preform_data_substitution(data, False)
-            self.new_key_round(key, False)
-            self.xor_data_key(data, key)
+            data = self.preform_data_substitution(data, False)
+            key = self.new_key_round(key, False)
+            data = self.xor_data_key(data, key)
 
         return data

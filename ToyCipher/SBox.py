@@ -67,12 +67,20 @@ class SBox:
 
         Parameters
         ----------
-        data : the data to substitute
-        encrypt : True if we are to encrypt, False if decryption
+        data : list of int
+            the data to substitute
+        encrypt : bool
+            True if we are to encrypt, False if decryption
+
+        Returns
+        -------
+        list of int
         """
+        length = len(data)
+
         if(encrypt):
             data = self.S[self.binary_to_int(data)]
         else:
             data = self.S_I[self.binary_to_int(data)]
 
-        return data
+        return self.int_to_binary(data, length)

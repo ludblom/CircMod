@@ -98,4 +98,4 @@ class Key:
         else:
             tmp_key = self.int_to_binary(self.K_I[self.binary_to_int(key)], self.block_len)
 
-        return tmp_key[::-1]
+        return tmp_key
