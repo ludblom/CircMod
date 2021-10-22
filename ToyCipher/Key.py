@@ -95,7 +95,9 @@ class Key:
         """
         if encrypt:
             tmp_key = self.int_to_binary(self.K[self.binary_to_int(key)], self.block_len)
+            tmp_key = tmp_key[::-1]
         else:
+            key = key[::-1]
             tmp_key = self.int_to_binary(self.K_I[self.binary_to_int(key)], self.block_len)
 
         return tmp_key
