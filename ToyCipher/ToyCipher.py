@@ -46,7 +46,7 @@ class ToyCipher(Ring, SBox, PBox, Key):
     """
 
     # TODO: Initiate a parameter to make the cipher 100% attackable (generating attackable S and P boxes).
-    def __init__(self, block_len=6, rounds=3, attackable=False):
+    def __init__(self, block_len=3, rounds=1):
         """
         Init default parameters.
 
@@ -59,7 +59,6 @@ class ToyCipher(Ring, SBox, PBox, Key):
         """
         self.block_len = block_len
         self.rounds = rounds
-        self.attackable = attackable
         super().__init__()
 
     def __binary(self, b):
@@ -142,12 +141,15 @@ class ToyCipher(Ring, SBox, PBox, Key):
 
         self.P = []
 
-        while(content[i+orig_indent] != ''):
-            tmp = []
-            for b in content[i+orig_indent].split(' '):
-                tmp.append(int(b))
-            self.P.append(tmp)
-            i += 1
+        try:
+            while(content[i+orig_indent] != ''):
+                tmp = []
+                for b in content[i+orig_indent].split(' '):
+                    tmp.append(int(b))
+                self.P.append(tmp)
+                i += 1
+        except:
+            pass
         return i
 
     def __load_s_box(self, orig_indent, content, box):
@@ -179,13 +181,21 @@ class ToyCipher(Ring, SBox, PBox, Key):
         else:
             self.K = {}
 
-        while(content[i+orig_indent] != ''):
-            a, b = content[i+orig_indent].split(' ')
-            if(box == "S"):
-                self.S[int(a)] = int(b)
-            else:
-                self.K[int(a)] = int(b)
-            i += 1
+        try:
+            while(content[i+orig_indent] != ''):
+                a, b = content[i+orig_indent].split(' ')
+                if(box == "S"):
+                    self.S[int(a)] = int(b)
+                else:
+                    self.K[int(a)] = int(b)
+                i += 1
+        except:
+            pass
+        if(box == "S"):
+            self.S_I = {v: k for k, v in self.S.items()}
+        else:
+            self.K_I = {v: k for k, v in self.K.items()}
+
         return i
 
     def save_cipher(self, file_name, hard=False):
@@ -272,13 +282,12 @@ class ToyCipher(Ring, SBox, PBox, Key):
 
         # Load the inverse boxes
         self.P_I = self.calculate_inverse(self.P)
-        self.S_I = {v: k for k, v in self.S.items()}
-        self.K_I = {v: k for k, v in self.K.items()}
 
         # Convert the column len to octal representation
         self.block_len = len(self.P)
 
     def encrypt(self, data_t, key_t):
+        # TODO Removed the key layer
         """
         Encrypt data using the key.
 
@@ -315,17 +324,18 @@ class ToyCipher(Ring, SBox, PBox, Key):
         if(type(key) == str):
             key = [int(i) for i in key]
 
-        data = self.xor_data_key(data, key)
+        #data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
             data = self.preform_data_substitution(data, True)
             data = self.p_box_multiplication(data, True)
             key = self.new_key_round(key, True)
-            data = self.xor_data_key(data, key)
+            #data = self.xor_data_key(data, key)
 
         return data
 
     def decrypt(self, data_t, key_t):
+        # TODO Removed the key layer
         """
         Decrypt data using the key.
 
@@ -365,12 +375,12 @@ class ToyCipher(Ring, SBox, PBox, Key):
         for _ in range(self.rounds):
             key = self.new_key_round(key, True)
 
-        data = self.xor_data_key(data, key)
+        #data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
             data = self.p_box_multiplication(data, False)
             data = self.preform_data_substitution(data, False)
             key = self.new_key_round(key, False)
-            data = self.xor_data_key(data, key)
+            #data = self.xor_data_key(data, key)
 
         return data

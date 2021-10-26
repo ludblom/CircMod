@@ -11,3 +11,5 @@ htmlcov
 venv/
 __pycache__/
 *.egg-info/
+try_code.py
+ciphers_found/

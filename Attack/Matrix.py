@@ -18,18 +18,23 @@ class Matrix:
     Methods
     -------
     int_to_binary(i, l):
-        convert int to binary
+        convert an integer to binary
     binary_to_int(b):
-        convert binary to int
-    matrix_mul(a, b):
-
+        convert a binary to an integer
     matrix_sum(a, b):
+        sum two matrices
     get_identity(n):
+        generate an identity matrix
     row_shift(M, x, y):
-    mul_row(M, x, y):
-    mul_row_column(x, M):
-    calculate_inverse(A):
+        shift the row of a matrix
+    matrix_mul_row(M, x, y):
+        mul row x with y
+    matrix_mul_row_column(x, M):
+        multiplie [] with [[..]..]
+    calculate_inverse(A_t):
+        calculate the inverse of A
     xor(a, b):
+        xor two lists togother
     """
 
     def int_to_binary(self, i, l):

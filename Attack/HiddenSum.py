@@ -31,9 +31,9 @@ class HiddenSum:
         attack cipher c using the toy cipher t
     """
 
-    def lambda_six(self, x):
+    def lambd(self, x):
         """
-        Calculate the lambda for 6-bits.
+        Calculate the lambda.
 
         Parameters
         ----------
@@ -50,9 +50,9 @@ class HiddenSum:
         l.append(x[2])
         return l
 
-    def lambdaInv_six(self, l):
+    def lambdInv(self, l):
         """
-        Calculate the inverse lambda for 6-bits.
+        Calculate the inverse lambda.
 
         Parameters
         ----------
@@ -69,75 +69,30 @@ class HiddenSum:
         x.append(l[2])
         return x
 
-    def vprime_six(self, v):
+    def create_M(self, t):
         """
-        Calculate the VPrime for 6-bits.
+        Create the M used to traverse inbetween ciphertext and message.
 
         Parameters
         ----------
-        x : list of int
-            binary list
+        t : Class ToyCipher
+            the already created ToyCipher class
 
         Returns
         -------
-        list of int
+        tuple
+            M : the M matrix
+            zero : the zero matrix used to mul with the cipher
         """
-        a = self.lambda_six(v[:3])
-        b = self.lambda_six(v[3:])
-        return a+b
+        zero = [0 for i in range(3)]
+        zero = t.encrypt(zero, "000")
+        zero = self.lambd(zero)
 
-    def vprimeInv_six(self, v):
-        """
-        Calculate the inverse VPrime for 6-bits.
+        I = t.get_identity(3)
+        M = []
+        for e in I:
+            v = t.encrypt(e, "000")
+            v_tile = self.lambd(v)
+            M.append(t.xor(v_tile, zero))
 
-        Parameters
-        ----------
-        x : list of int
-            binary list
-
-        Returns
-        -------
-        list of int
-        """
-        a = self.lambdaInv_six(v[:3])
-        b = self.lambdaInv_six(v[3:])
-        return a+b
-
-    def attack(self, c, t):
-        """
-        Attack the cipher c using the ToyCipher t.
-
-        Parameters
-        ----------
-        c : list of int
-            list of binary ints
-        t : class ToyCipher
-            the class ToyCipher used to encrypt c
-
-        Returns
-        -------
-        list of int
-            c decrypted
-        """
-        zero = [0 for i in range(6)]
-        zeroc = t.encrypt(zero, "000000")
-
-        mat = Matrix()
-        I = mat.get_identity(6)
-
-        Caz = [t.encrypt(i, "000000") for i in I]
-
-        lCaz = [self.vprime_six(i) for i in Caz]
-        lzeroc = self.vprime_six(zeroc)
-
-        lCaz2 = [ [ (lCaz[i][j]^lzeroc[j]) for j in range(6) ] for i in range(6) ]
-        lCaz2Inv = mat.calculate_inverse(lCaz2)
-
-        if(lCaz2Inv == []):
-            return []
-
-        cc = self.vprime_six(c)
-
-        mm = mat.matrix_mul_row_column([cc[i]^lzeroc[i] for i in range(6)], lCaz2Inv)
-
-        return self.vprimeInv_six(mm)
+        return M, zero

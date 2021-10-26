@@ -86,10 +86,7 @@ class PBox:
                     tmp.append(rand)
                 P_tmp.append(tmp)
             P = copy.deepcopy(P_tmp)
-            if self.attackable:
-                P_I = self.calculate_inverse_ring(P_tmp)
-            else:
-                P_I = self.calculate_inverse(P_tmp)
+            P_I = self.calculate_inverse(P_tmp)
             linear = self.__check_linearity(P_tmp)
             if(not linear):
                 P_I = []
