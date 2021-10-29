@@ -287,7 +287,6 @@ class ToyCipher(Ring, SBox, PBox, Key):
         self.block_len = len(self.P)
 
     def encrypt(self, data_t, key_t):
-        # TODO Removed the key layer
         """
         Encrypt data using the key.
 
@@ -324,18 +323,17 @@ class ToyCipher(Ring, SBox, PBox, Key):
         if(type(key) == str):
             key = [int(i) for i in key]
 
-        #data = self.xor_data_key(data, key)
+        data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
             data = self.preform_data_substitution(data, True)
             data = self.p_box_multiplication(data, True)
             key = self.new_key_round(key, True)
-            #data = self.xor_data_key(data, key)
+            data = self.xor_data_key(data, key)
 
         return data
 
     def decrypt(self, data_t, key_t):
-        # TODO Removed the key layer
         """
         Decrypt data using the key.
 
@@ -375,12 +373,12 @@ class ToyCipher(Ring, SBox, PBox, Key):
         for _ in range(self.rounds):
             key = self.new_key_round(key, True)
 
-        #data = self.xor_data_key(data, key)
+        data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
             data = self.p_box_multiplication(data, False)
             data = self.preform_data_substitution(data, False)
             key = self.new_key_round(key, False)
-            #data = self.xor_data_key(data, key)
+            data = self.xor_data_key(data, key)
 
         return data

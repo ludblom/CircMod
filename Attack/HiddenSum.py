@@ -19,21 +19,17 @@ class HiddenSum:
 
     Methods
     -------
-    lambda_six(x):
-        lambda for 6-bits
-    lambdaInv_six(l):
-        inverse lambda for 6-bits
-    vprime_six(v):
-        vprime for 6-bits
-    vprimeInv_six(v):
-        inverse vprime for 6-bits
-    attack(t, c):
-        attack cipher c using the toy cipher t
+    tilde(x):
+        tile convert
+    tildeInv(l):
+        inverse tile convert
+    create_M(t):
+        create the M matrix from ToyCipher class t
     """
 
-    def lambd(self, x):
+    def tilde(self, x):
         """
-        Calculate the lambda.
+        Calculate the tilde of x.
 
         Parameters
         ----------
@@ -50,9 +46,9 @@ class HiddenSum:
         l.append(x[2])
         return l
 
-    def lambdInv(self, l):
+    def tildeInv(self, l):
         """
-        Calculate the inverse lambda.
+        Calculate the inverse tilde of l.
 
         Parameters
         ----------
