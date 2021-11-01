@@ -82,13 +82,13 @@ class HiddenSum:
         """
         zero = [0 for i in range(3)]
         zero = t.encrypt(zero, "000")
-        zero = self.lambd(zero)
+        zero = self.tilde(zero)
 
         I = t.get_identity(3)
         M = []
         for e in I:
             v = t.encrypt(e, "000")
-            v_tile = self.lambd(v)
-            M.append(t.xor(v_tile, zero))
+            v_tilde = self.tilde(v)
+            M.append(t.xor(v_tilde, zero))
 
         return M, zero
