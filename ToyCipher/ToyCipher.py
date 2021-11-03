@@ -2,7 +2,7 @@
 
 """Create a ToyCipher."""
 
-from Attack.RingOperator import Ring
+from Attack.Matrix import Matrix
 from .SBox import SBox
 from .PBox import PBox
 from .Key import Key
@@ -12,7 +12,7 @@ import copy
 import os
 
 
-class ToyCipher(Ring, SBox, PBox, Key):
+class ToyCipher(Matrix, SBox, PBox, Key):
     """
     A class to represent the ToyCipher.
 
