@@ -387,7 +387,7 @@ class HiddenSum(Matrix):
                     A_t[j] = self.int_to_binary(
                                 self.ring(self.binary_to_int(A_t[j]),
                                           self.binary_to_int(A_t[i])),
-                                self.N
+                                          self.N
                                 )
                     A = A_t
 
@@ -395,7 +395,7 @@ class HiddenSum(Matrix):
                     I_t[j] = self.int_to_binary(
                                 self.ring(self.binary_to_int(I_t[j]),
                                           self.binary_to_int(I_t[i])),
-                                self.N
+                                          self.N
                                 )
                     I = I_t
 
@@ -406,7 +406,7 @@ class HiddenSum(Matrix):
                     A_t[j] = self.int_to_binary(
                                 self.ring(self.binary_to_int(A_t[j]),
                                           self.binary_to_int(A_t[i])),
-                                self.N
+                                          self.N
                                 )
                     A = A_t
 
@@ -414,14 +414,22 @@ class HiddenSum(Matrix):
                     I_t[j] = self.int_to_binary(
                                 self.ring(self.binary_to_int(I_t[j]),
                                           self.binary_to_int(I_t[i])),
-                                self.N
+                                          self.N
                                 )
                     I = I_t
         return True
 
-    def check_lambda_attackable(self, block_len, rounds):
-        t = ToyCipher(block_len=block_len, rounds=rounds)
-        while(not self.lambda_GL_ring(t.P)):
-            print("Checking")
-            t.P, t.P_I = t.permutation_box()
-        return t
+    def attack(self, c):
+        """
+        Decrypt the cipher c.
+
+        Parameters
+        ----------
+        c : list of int or int
+            the cipher
+
+        Returns
+        -------
+        int
+        """
+        pass

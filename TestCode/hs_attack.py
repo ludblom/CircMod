@@ -5,10 +5,8 @@ from Attack.HiddenSum import HiddenSum
 
 
 if __name__ == '__main__':
-    for i in range(100):
-        t = ToyCipher(block_len=6)
-        hs = HiddenSum(N=6, k=2, t=t)
-        hs.lambda_GL_ring(t.P)
-        while(not hs.lambda_GL_ring(t.P)):
-            print("Whoooo")
-            t.P, t.P_I = t.permutation_box()
+    t = ToyCipher(block_len=3)
+    hs = HiddenSum(N=3, k=1, t=t)
+    while(not hs.lambda_GL_ring(t.P)):
+        t.P, t.P_I = t.permutation_box()
+    t.save_cipher("found_P_candidate.txt", hard=True)
