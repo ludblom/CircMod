@@ -63,13 +63,17 @@ class HiddenSum(Matrix):
         """
         if t == None:
             raise ValueError("No ToyCipher defined.")
+        else:
+            self.t = t
         self.N = N
         self.k = k
         self.Bo = self.__generate_Bo(N, k)
         self.Bex = self.__generate_Bex()
         self.tilde = self.phi_map(t.P)
+        self.P = t.P
         self.P_tilde = self.lambda_tilde(t.P)
         self.M, self.zero = self.create_M(t)
+        self.M_inv = self.calculate_inverse(self.M)
         super().__init__()
 
     def __generate_Bex(self):
@@ -341,14 +345,20 @@ class HiddenSum(Matrix):
         """
         phi = self.phi_map(t.P)
         zero = [0 for i in range(self.N)]
-        zero = phi[self.binary_to_int(t.encrypt(zero, zero))]
-        zero = self.int_to_binary(zero, self.N)
+        zero = t.encrypt(zero, zero)
+        # TODO Create Vprime the correct way
+        #zero = phi[self.binary_to_int(t.encrypt(zero, zero))]
+        #zero = self.int_to_binary(zero, self.N)
+        zero = self.matrix_mul_row_column(zero, t.P)
 
         I = self.get_identity(self.N)
         M = []
         for e in I:
             v = t.encrypt(e, zero)
-            v_tilde = self.int_to_binary(phi[self.binary_to_int(v)], self.N)
+            # TODO Create Vprime the correct way
+            #v_tilde = self.int_to_binary(phi[self.binary_to_int(v)], self.N)
+            e = t.encrypt(e, [0 for _ in range(self.N)])
+            v_tilde = self.matrix_mul_row_column(e, t.P)
             M.append(self.xor(v_tilde, zero))
 
         return M, zero
@@ -432,4 +442,8 @@ class HiddenSum(Matrix):
         -------
         int
         """
-        pass
+        c_tilde = self.matrix_mul_row_column(c, self.t.P)
+        c_t = self.xor(c_tilde, self.zero)
+        m_tilde = self.matrix_mul_row_column(c_t, self.M_inv)
+        m = self.matrix_mul_row_column(m_tilde, self.t.P_I)
+        return self.binary_to_int(m)

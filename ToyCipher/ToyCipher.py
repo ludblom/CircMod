@@ -198,7 +198,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         return i
 
-    def save_cipher(self, file_name, hard=False):
+    def save_cipher(self, file_name, hard=False, only_P=False):
         """
         Save the current cipher to a text file.
 
@@ -232,15 +232,16 @@ class ToyCipher(Matrix, SBox, PBox, Key):
                 f.write('\n')
             f.write('\n')
 
-            f.write('## S BOX\n')
-            for key in self.S:
-                f.write('{} {}\n'.format(key, self.S[key]))
-            f.write('\n')
+            if not only_P:
+                f.write('## S BOX\n')
+                for key in self.S:
+                    f.write('{} {}\n'.format(key, self.S[key]))
+                f.write('\n')
 
-            f.write('## K BOX\n')
-            for key in self.K:
-                f.write('{} {}\n'.format(key, self.K[key]))
-            f.write('\n')
+                f.write('## K BOX\n')
+                for key in self.K:
+                    f.write('{} {}\n'.format(key, self.K[key]))
+                f.write('\n')
 
     def load_cipher(self, file_name):
         """
