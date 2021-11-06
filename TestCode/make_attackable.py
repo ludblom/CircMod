@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import time
+
 """
 Template code to brute force search for a P and S-box combination that are linear
 against each other. No key is used here.
@@ -11,6 +13,7 @@ from Attack.HiddenSum import HiddenSum
 
 
 def checker(r, t):
+    # Check that the vulnerability works on the whole set
     for a in range(2**3):
         for b in range(2**3):
             a_o_b = r.ring(a, b)
@@ -31,18 +34,19 @@ def search_attackable():
     while(not checker(r, t)):
         t.S, t.S_I = t.substitution_box(3)
         t.P, t.P_I = t.permutation_box()
-    t.save_cipher("ATTACKABLE_FOUND.txt", hard=True)
+        t.K, t.K_I = t.key_box()
+    t.save_cipher("attackable_found.txt", hard=True)
 
 def l():
     hs = HiddenSum()
     r = Ring(N=3, k=1)
-    t = ToyCipher(block_len=3, rounds=4)
-    t.load_cipher("ATTACKABLE_FOUND.txt")
+    t = ToyCipher(block_len=3, rounds=1)
+    t.load_cipher("attackable_found.txt")
 
     for i in range(2**3):
         i_i = t.int_to_binary(i, 3)
-        c = t.encrypt(i_i, "000")
-        c_tile = hs.lambd(c)
+        c = t.encrypt(i_i, t.int_to_binary(i, 3))
+        c_tile = hs.tile(c)
 
         M, zero = hs.create_M(t)
         M_i = t.calculate_inverse(M)
@@ -50,11 +54,22 @@ def l():
             return False
         c_v = t.xor(c_tile, zero)
         m_tile = t.matrix_mul_row_column(c_v, M_i)
-        m = hs.lambdInv(m_tile)
+        m = hs.tileInv(m_tile)
         if m != i_i:
             return False
     return True
 
+def te():
+    t = ToyCipher()
+    t.load_cipher('is_linear.txt')
+    print(t.P_I)
 
-while(not l()):
-    search_attackable()
+# start = time.time()
+# search_attackable()
+# while(not l()):
+#     search_attackable()
+# end = time.time()
+
+# print("It took %.2f secounds." % (end-start))
+
+te()

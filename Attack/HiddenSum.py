@@ -3,6 +3,7 @@
 """Preform hidden sum attack."""
 
 from .Matrix import Matrix
+from ToyCipher.ToyCipher import ToyCipher
 
 import copy
 
@@ -339,15 +340,88 @@ class HiddenSum(Matrix):
             zero : the zero matrix used to mul with the cipher
         """
         phi = self.phi_map(t.P)
-        zero = [0 for i in range(3)]
-        zero = self.binary_to_int(t.encrypt(zero, "000"))
-        zero = phi[zero]
+        zero = [0 for i in range(self.N)]
+        zero = phi[self.binary_to_int(t.encrypt(zero, zero))]
+        zero = self.int_to_binary(zero, self.N)
 
-        I = self.get_identity(3)
+        I = self.get_identity(self.N)
         M = []
         for e in I:
-            v = self.binary_to_int(t.encrypt(e, "000"))
-            v_tilde = phi[v]
-            M.append(self.int_to_binary(v_tilde^zero, self.N))
+            v = t.encrypt(e, zero)
+            v_tilde = self.int_to_binary(phi[self.binary_to_int(v)], self.N)
+            M.append(self.xor(v_tilde, zero))
 
         return M, zero
+
+    def lambda_GL_ring(self, A_t):
+        """
+        Calculate that GL_\circ of A is true.
+
+        Parameters
+        ----------
+        A_t : list of int
+
+        Returns
+        -------
+        list of int
+            the inverse of A_t
+        """
+        A = copy.deepcopy(A_t)
+        I = self.get_identity(len(A))
+        foundPivot = False
+        for i in range(len(A)):
+            if A[i][i] != 1:
+                for j in range(i+1, len(A)):
+                    if A[j][i] == 1:
+                        foundPivot = True
+                        A = self.row_shift(A, i, j)
+                        I = self.row_shift(I, i, j)
+                        break
+                if foundPivot == False:
+                    return False
+                else:
+                    foundPivot = False
+            for j in range(i+1, len(A)):
+                if A[j][i] == 1:
+                    A_t = copy.deepcopy(A)
+                    A_t[j] = self.int_to_binary(
+                                self.ring(self.binary_to_int(A_t[j]),
+                                          self.binary_to_int(A_t[i])),
+                                self.N
+                                )
+                    A = A_t
+
+                    I_t = copy.deepcopy(I)
+                    I_t[j] = self.int_to_binary(
+                                self.ring(self.binary_to_int(I_t[j]),
+                                          self.binary_to_int(I_t[i])),
+                                self.N
+                                )
+                    I = I_t
+
+        for i in range(len(A)-1, 0, -1):
+            for j in range(i-1, -1, -1):
+                if A[j][i] == 1:
+                    A_t = copy.deepcopy(A)
+                    A_t[j] = self.int_to_binary(
+                                self.ring(self.binary_to_int(A_t[j]),
+                                          self.binary_to_int(A_t[i])),
+                                self.N
+                                )
+                    A = A_t
+
+                    I_t = copy.deepcopy(I)
+                    I_t[j] = self.int_to_binary(
+                                self.ring(self.binary_to_int(I_t[j]),
+                                          self.binary_to_int(I_t[i])),
+                                self.N
+                                )
+                    I = I_t
+        return True
+
+    def check_lambda_attackable(self, block_len, rounds):
+        t = ToyCipher(block_len=block_len, rounds=rounds)
+        while(not self.lambda_GL_ring(t.P)):
+            print("Checking")
+            t.P, t.P_I = t.permutation_box()
+        return t
