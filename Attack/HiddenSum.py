@@ -74,7 +74,39 @@ class HiddenSum(Matrix):
         self.P_tilde = self.lambda_tilde(t.P)
         self.M, self.zero = self.create_M(t)
         self.M_inv = self.calculate_inverse(self.M)
+        if self.M_inv == []:
+            raise ValueError("The P and S box combination is not attackable.")
+        check = self.__is_attackable()
+        if check == 1:
+            raise ValueError("P-box is not vulnerable.")
+        elif check == 2:
+            raise ValueError("S-box is not vulnerable.")
         super().__init__()
+
+    def __is_attackable(self):
+        lam = self.calculate_inverse(self.t.P)
+        lam_r = self.lambda_GL_ring(self.t.P)
+        P_check = 0 if (lam != [] and lam_r != []) else 1
+        if P_check == 1:
+            return 1
+        S_check = self.__check_S_attackability()
+        if S_check == 2:
+            return 2
+        return 0
+
+    def __check_S_attackability(self):
+        for x in range(2**self.N):
+            for y in range(2**self.N):
+                xry = self.ring(x, y)
+                f_xry = self.t.S[xry]
+
+                fx = self.t.S[x]
+                fy = self.t.S[y]
+                fx_r_fy = self.ring(fx, fy)
+
+                if f_xry != fx_r_fy:
+                    return 2
+        return 0
 
     def __generate_Bex(self):
         """
@@ -354,13 +386,14 @@ class HiddenSum(Matrix):
         I = self.get_identity(self.N)
         M = []
         for e in I:
-            v = t.encrypt(e, zero)
             # TODO Create Vprime the correct way
+            #v = t.encrypt(e, zero)
             #v_tilde = self.int_to_binary(phi[self.binary_to_int(v)], self.N)
-            e = t.encrypt(e, [0 for _ in range(self.N)])
-            v_tilde = self.matrix_mul_row_column(e, t.P)
+            v = t.encrypt(e, [0 for _ in range(self.N)])
+            v_tilde = self.matrix_mul_row_column(v, t.P)
             M.append(self.xor(v_tilde, zero))
 
+        print(M)
         return M, zero
 
     def lambda_GL_ring(self, A_t):
@@ -388,7 +421,7 @@ class HiddenSum(Matrix):
                         I = self.row_shift(I, i, j)
                         break
                 if foundPivot == False:
-                    return False
+                    return []
                 else:
                     foundPivot = False
             for j in range(i+1, len(A)):
@@ -427,7 +460,7 @@ class HiddenSum(Matrix):
                                           self.N
                                 )
                     I = I_t
-        return True
+        return I
 
     def attack(self, c):
         """
@@ -442,6 +475,8 @@ class HiddenSum(Matrix):
         -------
         int
         """
+        if type(c) == int:
+            c = self.int_to_binary(c, self.N)
         c_tilde = self.matrix_mul_row_column(c, self.t.P)
         c_t = self.xor(c_tilde, self.zero)
         m_tilde = self.matrix_mul_row_column(c_t, self.M_inv)
