@@ -33,17 +33,17 @@ class HiddenSum(Matrix):
         preform the ring operator
     dot(a, b):
         preform the dot product using ring
-    gamma(a, P_a):
-        determine gamma substitution using ring
-    gamma_xor(a, P_a):
-        determine gamma substitution using xor
+    phi_pos_a(a, P_a):
+        determine Phi val at pos a substitution using ring
+    phi_pos_a_xor(a, P_a):
+        determine Phi val at pos a substitution using xor
     lamb(P):
         preform the lambda calculation
     create_M(t):
         create the M matrix from ToyCipher class t
     """
 
-    def __init__(self, N=3, k=1, t=None):
+    def __init__(self, N=3, k=1, t=None, key=None):
         """
         Init default parameters.
 
@@ -55,6 +55,8 @@ class HiddenSum(Matrix):
             size of the modifying matrix in x direction
         t : Class ToyCipher
             a ToyCipher class
+        key : list of int
+            the key
 
         Raises
         ------
@@ -69,13 +71,14 @@ class HiddenSum(Matrix):
         self.k = k
         self.Bo = self.__generate_Bo(N, k)
         self.Bex = self.__generate_Bex()
-        self.tilde = self.phi_map(t.P)
-        self.P = t.P
+        self.tilde, self.tilde_inv = self.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
-        self.M, self.zero = self.create_M(t)
+        self.M, self.zero = self.create_M(t, key)
         self.M_inv = self.calculate_inverse(self.M)
         if self.M_inv == []:
             raise ValueError("The P and S box combination is not attackable.")
+        if not self.__lambda_check():
+            raise ValueError("Lambda not in XOR or Circ.")
         check = self.__is_attackable()
         if check == 1:
             raise ValueError("P-box is not vulnerable.")
@@ -107,6 +110,36 @@ class HiddenSum(Matrix):
                 if f_xry != fx_r_fy:
                     return 2
         return 0
+
+    def __lambda_check(self):
+        for x in range(2**self.N):
+            for y in range(2**self.N):
+                # (x + y)\lam = x\lam + y\lam
+                # (x + y)\lam
+                x_p_y = self.int_to_binary(x^y, self.N)
+                x_p_y_l = self.binary_to_int(self.matrix_mul_row_column(x_p_y, self.t.P))
+
+                # x\lam + y\lam
+                x_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), self.t.P))
+                y_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), self.t.P))
+                xl_p_yl = x_l^y_l
+
+                if xl_p_yl != x_p_y_l:
+                    return False
+
+                # (x o y)\lam = x\lam o y\lam
+                # (x o y)\lam
+                x_o_y = self.int_to_binary(self.ring(x, y), self.N)
+                x_o_y_l = self.binary_to_int(self.matrix_mul_row_column(x_o_y, self.t.P))
+
+                # x\lam o y\lam
+                x_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), self.t.P))
+                y_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), self.t.P))
+                xl_o_yl = self.ring(x_lo, y_lo)
+
+                if x_o_y_l != xl_o_yl:
+                    return False
+        return True
 
     def __generate_Bex(self):
         """
@@ -240,9 +273,9 @@ class HiddenSum(Matrix):
         a_dot_b = self.matrix_sum(a_plus_b, a_ring_b)
         return self.binary_to_int(a_dot_b)
 
-    def gamma(self, a, P_a):
+    def phi_pos_a(self, a, P_a):
         """
-        Preform gamma using ring.
+        Calculate Phi for indent a using ring.
 
         Parameters
         ----------
@@ -252,7 +285,7 @@ class HiddenSum(Matrix):
         Returns
         -------
         int
-            gamma
+            Phi on pos a using ring
         """
         P = copy.deepcopy(P_a)
         if type(a) == int:
@@ -265,9 +298,9 @@ class HiddenSum(Matrix):
             gamma = self.ring(gamma, self.binary_to_int(P[i]))
         return gamma
 
-    def gamma_xor(self, a, P_a):
+    def phi_pos_a_xor(self, a, P_a):
         """
-        Preform gamma using xor.
+        Calculate Phi for indent a using XOR.
 
         Parameters
         ----------
@@ -277,7 +310,7 @@ class HiddenSum(Matrix):
         Returns
         -------
         int
-            gamma
+            Phi at position a using XOR
         """
         P = copy.deepcopy(P_a)
         if type(a) == int:
@@ -292,7 +325,7 @@ class HiddenSum(Matrix):
 
     def phi_map(self, P):
         """
-        Calculate the phi map.
+        Calculate the Phi and Phi inverse map.
 
         Parameters
         ----------
@@ -301,19 +334,34 @@ class HiddenSum(Matrix):
 
         Returns
         -------
-        list of int
-            Phi
+        tuple of list of int
+            Phi and Phi inverse
         """
+        # TODO Only for 3x3 matrix atm
+        r = []
+        x = []
         phi = [0 for i in range(2**self.N)]
+        phi_inv = [i for i in range(2**self.N)]
 
         for i in range(2**self.N):
-            ring = self.gamma(i, P)
-            xor = self.gamma_xor(i, P)
+            ring = self.phi_pos_a(i, P)
+            xor = self.phi_pos_a_xor(i, P)
+            r.append(ring)
+            x.append(xor)
             if ring != xor:
                 phi[ring] = xor
             else:
                 phi[ring] = ring
-        return phi
+
+        pos = []
+        for i in range(2**self.N):
+            if r[i] != x[i]:
+                pos.append(i)
+
+        phi_inv[pos[0]] = pos[1]
+        phi_inv[pos[1]] = pos[0]
+
+        return phi, phi_inv
 
     def matrix_mul_row_ring(self, M, x, y):
         """
@@ -354,47 +402,10 @@ class HiddenSum(Matrix):
         list of int
             the lambda_tilde matrix
         """
-        phi = self.phi_map(P)
         P_tilde = []
         for i in P:
-            P_tilde.append(self.int_to_binary(phi[self.binary_to_int(i)], self.N))
+            P_tilde.append(self.int_to_binary(self.tilde[self.binary_to_int(i)], self.N))
         return P_tilde
-
-    def create_M(self, t):
-        """
-        Create the M used to traverse inbetween ciphertext and message.
-
-        Parameters
-        ----------
-        t : Class ToyCipher
-            the already created ToyCipher class
-
-        Returns
-        -------
-        tuple
-            M : the M matrix
-            zero : the zero matrix used to mul with the cipher
-        """
-        phi = self.phi_map(t.P)
-        zero = [0 for i in range(self.N)]
-        zero = t.encrypt(zero, zero)
-        # TODO Create Vprime the correct way
-        #zero = phi[self.binary_to_int(t.encrypt(zero, zero))]
-        #zero = self.int_to_binary(zero, self.N)
-        zero = self.matrix_mul_row_column(zero, t.P)
-
-        I = self.get_identity(self.N)
-        M = []
-        for e in I:
-            # TODO Create Vprime the correct way
-            #v = t.encrypt(e, zero)
-            #v_tilde = self.int_to_binary(phi[self.binary_to_int(v)], self.N)
-            v = t.encrypt(e, [0 for _ in range(self.N)])
-            v_tilde = self.matrix_mul_row_column(v, t.P)
-            M.append(self.xor(v_tilde, zero))
-
-        print(M)
-        return M, zero
 
     def lambda_GL_ring(self, A_t):
         """
@@ -462,6 +473,37 @@ class HiddenSum(Matrix):
                     I = I_t
         return I
 
+    def create_M(self, t, key):
+        """
+        Create the M used to traverse inbetween ciphertext and message.
+
+        Parameters
+        ----------
+        t : Class ToyCipher
+            the already created ToyCipher class
+        key : list of int
+            the key to the cipher
+
+        Returns
+        -------
+        tuple
+            M : the M matrix
+            zero : the zero matrix used to mul with the cipher
+        """
+        zero = [0 for _ in range(self.N)]
+        zero = t.encrypt(zero, key)
+        zero = self.tilde[self.binary_to_int(zero)]
+        zero = self.int_to_binary(zero, self.N)
+
+        I = self.get_identity(self.N)
+        M = []
+        for e in I:
+            v = t.encrypt(e, key)
+            v_tilde = self.int_to_binary(self.tilde[self.binary_to_int(v)], self.N)
+            M.append(self.xor(v_tilde, zero))
+
+        return M, zero
+
     def attack(self, c):
         """
         Decrypt the cipher c.
@@ -471,14 +513,18 @@ class HiddenSum(Matrix):
         c : list of int or int
             the cipher
 
+        k : list of int or int
+            the key
+
         Returns
         -------
         int
         """
         if type(c) == int:
             c = self.int_to_binary(c, self.N)
-        c_tilde = self.matrix_mul_row_column(c, self.t.P)
+        c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
         c_t = self.xor(c_tilde, self.zero)
         m_tilde = self.matrix_mul_row_column(c_t, self.M_inv)
-        m = self.matrix_mul_row_column(m_tilde, self.t.P_I)
-        return self.binary_to_int(m)
+        m = self.tilde_inv[self.binary_to_int(m_tilde)]
+
+        return m
