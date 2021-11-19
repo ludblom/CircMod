@@ -2,7 +2,7 @@
 
 """Tests for the Ring product, ToyCipher."""
 
-from Attack.RingOperator import Ring
+from Attack.Operations import Operations
 from ToyCipher.ToyCipher import ToyCipher
 
 import unittest
@@ -21,7 +21,7 @@ class TestRingRules(unittest.TestCase):
         ]
 
         for N, k in test_sizes:
-            c = Ring(N=N, k=k)
+            c = Operations(N=N, k=k)
             for a in range(2**N):
                 for b in range(2**N):
                     self.assertEqual(
@@ -40,7 +40,7 @@ class TestRingRules(unittest.TestCase):
         ]
 
         for N, k in test_sizes:
-            hs = Ring(N=N, k=k)
+            hs = Operations(N=N, k=k)
             for a in range(2**N):
                 for b in range(2**N):
                     for c in range(2**N):
@@ -83,7 +83,7 @@ class TestRingRules(unittest.TestCase):
         ]
 
         for N, k in test_sizes:
-            hs = Ring(N=N, k=k)
+            hs = Operations(N=N, k=k)
             for x in range(2**N):
                 for a in range(2**N):
                     for b in range(2**N):
@@ -127,7 +127,7 @@ class TestRingRules(unittest.TestCase):
         ]
 
         for N, k in test_sizes:
-            hs = Ring(N=N, k=k)
+            hs = Operations(N=N, k=k)
             for a in range(2**N):
                 for b in range(2**N):
                     for c in range(2**N):
@@ -153,7 +153,7 @@ class TestRingRules(unittest.TestCase):
         ]
 
         for N, k in test_sizes:
-            hs = Ring(N=N, k=k)
+            hs = Operations(N=N, k=k)
             for a in range(2**N):
                 for b in range(2**N):
                     for c in range(2**N):
