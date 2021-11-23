@@ -48,7 +48,7 @@ class HiddenSum(Matrix):
         decrypt the cipher c
     """
 
-    def __init__(self, N=3, k=1, t=None):
+    def __init__(self, N=3, k=1, t=None, key=None):
         """
         Init default parameters.
 
@@ -60,6 +60,8 @@ class HiddenSum(Matrix):
             size of the modifying matrix in x direction
         t : Class ToyCipher
             a ToyCipher class
+        key : list of int or string
+            the key used to encrypt
 
         Raises
         ------
@@ -72,19 +74,29 @@ class HiddenSum(Matrix):
             self.t = t
         self.N = N
         self.k = k
+        self.key = key
         self.tilde, self.tilde_inv = self.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
-        M, zero = self.create_M([0 for _ in range(N)])
-        M_inv = self.calculate_inverse(M)
-        if M_inv == []:
-            raise ValueError("The P and S box combination is not attackable.")
+        if key == None:
+            M, zero = self.create_M([0 for _ in range(N)])
+            M_inv = self.calculate_inverse(M)
+            if M_inv == []:
+                raise ValueError("The P and S box combination is not attackable.")
+        else:
+            self.M, self.zero = self.create_M([0 for _ in range(N)])
+            self.M_inv = self.calculate_inverse(self.M)
+            if self.M_inv == []:
+                raise ValueError("The P and S box combination is not attackable.")
+
         if not self.__lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
+
         check = self.__is_attackable()
+
         if check == 1:
             raise ValueError("P-box is not vulnerable.")
         elif check == 2:
-            raise ValueError("S-box is not vulnerable.")
+           raise ValueError("S-box is not vulnerable.")
         super().__init__()
 
     def __is_attackable(self):
@@ -359,7 +371,7 @@ class HiddenSum(Matrix):
 
         return M, zero
 
-    def attack(self, c, key):
+    def attack(self, c, k=None):
         """
         Decrypt the cipher c.
 
@@ -367,26 +379,40 @@ class HiddenSum(Matrix):
         ----------
         c : list of int or int
             the cipher
-        key : list of int or int
+        k : list of int or int
             the key
 
         Returns
         -------
         int
+
+        Raises
+        ------
+        ValueError
+            When a key is neither provided to the function
+            nor the class.
         """
         if type(c) == int:
             c = self.int_to_binary(c, self.N)
-        if type(key) == int:
-            c = self.int_to_binary(key, self.N)
+        if type(k) == int:
+            c = self.int_to_binary(k, self.N)
 
-        M, zero = self.create_M(key)
-        M_inv = self.calculate_inverse(M)
-        if M_inv == []:
-            raise ValueError("M is not invertable.")
+        if k != None:
+            M, zero = self.create_M(k)
+            M_inv = self.calculate_inverse(M)
+            if M_inv == []:
+                raise ValueError("M is not invertable.")
 
-        c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
-        c_t = self.xor(c_tilde, zero)
-        m_tilde = self.matrix_mul_row_column(c_t, M_inv)
-        m = self.tilde_inv[self.binary_to_int(m_tilde)]
+            c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
+            c_t = self.xor(c_tilde, zero)
+            m_tilde = self.matrix_mul_row_column(c_t, M_inv)
+            m = self.tilde_inv[self.binary_to_int(m_tilde)]
+        elif self.key != None:
+            c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
+            c_t = self.xor(c_tilde, self.zero)
+            m_tilde = self.matrix_mul_row_column(c_t, self.M_inv)
+            m = self.tilde_inv[self.binary_to_int(m_tilde)]
+        else:
+            raise ValueError("No key defined.")
 
         return m

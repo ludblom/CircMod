@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Preform special operations."""
+
 from .Matrix import Matrix
 
 
@@ -18,17 +20,17 @@ class Operations(Matrix):
 
     Methods
     -------
-    def __generate_Bex():
+    __generate_Bex():
         generate Bex matrices
-    def __generate_Bo(N, k):
+    __generate_Bo(N, k):
         generate Bo matrix
-    def get_Bx(b):
+    get_Bx(b):
         get the Bx matrix
-    def ring(a, b):
+    ring(a, b):
         preform the ring operation
-    def dot(a, b):
+    dot(a, b):
         preform the dot product
-    def matrix_mul_row_ring(M, x, y):
+    matrix_mul_row_ring(M, x, y):
         matrix multiplication using ring
     """
 
