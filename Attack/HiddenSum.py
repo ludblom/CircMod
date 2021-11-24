@@ -91,12 +91,7 @@ class HiddenSum(Matrix):
         if not self.__lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
 
-        check = self.__is_attackable()
-
-        if check == 1:
-            raise ValueError("P-box is not vulnerable.")
-        elif check == 2:
-           raise ValueError("S-box is not vulnerable.")
+        self.__is_attackable()
         super().__init__()
 
     def __is_attackable(self):
@@ -105,13 +100,9 @@ class HiddenSum(Matrix):
         """
         lam = self.calculate_inverse(self.t.P)
         lam_r = self.lambda_GL_ring(self.t.P)
-        P_check = 0 if (lam != [] and lam_r != []) else 1
-        if P_check == 1:
-            return 1
-        S_check = self.__check_S_attackability()
-        if S_check == 2:
-            return 2
-        return 0
+        if (lam == [] or lam_r == []):
+            raise ValueError("P-box is not vulnerable.")
+        self.__check_S_attackability()
 
     def __check_S_attackability(self):
         """
@@ -128,8 +119,7 @@ class HiddenSum(Matrix):
                 fx_r_fy = r.ring(fx, fy)
 
                 if f_xry != fx_r_fy:
-                    return 2
-        return 0
+                    raise ValueError("S-box is not vulnerable.")
 
     def __lambda_check(self):
         """
