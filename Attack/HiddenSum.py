@@ -77,16 +77,16 @@ class HiddenSum(Matrix):
         self.key = key
         self.tilde, self.tilde_inv = self.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
-        if key == None:
-            M, zero = self.create_M([0 for _ in range(N)])
-            M_inv = self.calculate_inverse(M)
-            if M_inv == []:
-                raise ValueError("The P and S box combination is not attackable.")
-        else:
-            self.M, self.zero = self.create_M([0 for _ in range(N)])
-            self.M_inv = self.calculate_inverse(self.M)
-            if self.M_inv == []:
-                raise ValueError("The P and S box combination is not attackable.")
+        # if key == None:
+        #     M, zero = self.create_M([0 for _ in range(N)])
+        #     M_inv = self.calculate_inverse(M)
+        #     if M_inv == []:
+        #         raise ValueError("The P and S box combination is not attackable.")
+        # else:
+        #     self.M, self.zero = self.create_M([0 for _ in range(N)])
+        #     self.M_inv = self.calculate_inverse(self.M)
+        #     if self.M_inv == []:
+        #         raise ValueError("The P and S box combination is not attackable.")
 
         if not self.__lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
@@ -95,8 +95,8 @@ class HiddenSum(Matrix):
 
         if check == 1:
             raise ValueError("P-box is not vulnerable.")
-        elif check == 2:
-           raise ValueError("S-box is not vulnerable.")
+        # elif check == 2:
+        #    raise ValueError("S-box is not vulnerable.")
         super().__init__()
 
     def __is_attackable(self):
@@ -108,9 +108,9 @@ class HiddenSum(Matrix):
         P_check = 0 if (lam != [] and lam_r != []) else 1
         if P_check == 1:
             return 1
-        S_check = self.__check_S_attackability()
-        if S_check == 2:
-            return 2
+        #S_check = self.__check_S_attackability()
+        #if S_check == 2:
+        #    return 2
         return 0
 
     def __check_S_attackability(self):
