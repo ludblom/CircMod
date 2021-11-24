@@ -18,8 +18,6 @@ class PBox:
 
     Methods
     -------
-    __check_linearity(P_tmp):
-        Check linearity
     permutation_box(num_of_octals):
         Create the encryption (P) and decryption (P_I) permutation matrix
     p_box_multiplication(data, encrypt):
@@ -40,42 +38,65 @@ class PBox:
         self.P, self.P_I = self.permutation_box()
         super().__init__()
 
-    def __check_linearity(self, P_tmp):
+    def __verify_validity(self, P):
         """
-        Check that a matrix is linear.
+        Verify that P is a valid gamma in terms of content and size.
 
         Parameters
         ----------
-        P_tmp : list of int
+        P : list of int
+            a gamma matrix
 
         Returns
         -------
-        bool
+        None
+
+        Raises
+        ------
+        ValueError
+            if P is not valid
         """
-        l = self.xor(P_tmp[0], P_tmp[1])
-        for i in range(2, len(P_tmp)):
-            l = self.xor(l, P_tmp[i])
+        counter = 0
+        for row in P:
+            counter += 1
+            if len(row) != self.block_len:
+                raise ValueError("P is not of correct size.")
+            for elem in row:
+                if type(elem) != int:
+                    raise ValueError("P contain illegal characters.")
+        if counter != self.block_len:
+            raise ValueError("P is not of correct size.")
 
-        zero = [0 for i in range(len(P_tmp))]
-
-        if l == zero:
-            return False
-
-        return True
-
-    def permutation_box(self):
+    def permutation_box(self, P=None):
         """
         Create the permutation and inverse permutation boxes.
 
         Parameters
         ----------
-        None
+        P : list of int
+            if P is defined use that as the gamma
 
         Returns
         -------
         tuple of P and P_I
             the encryption (P) and decryption (P_I) permutation box (binary)
+
+        Raises
+        ------
+        ValueError
+            if the matrix given is non-linear, in the wrong size
+            or contain illegal characters
         """
+        if P != None:
+            self.__verify_validity(P)
+            P_I = self.calculate_inverse(P)
+            if P_I == []:
+                raise ValueError("The P matrix given is non-linear.")
+            else:
+                # TODO Not created yet potentially
+                self.P = P
+                self.P_I = P_I
+
         P_I = []
         while P_I == []:
             P_tmp = []
@@ -87,9 +108,6 @@ class PBox:
                 P_tmp.append(tmp)
             P = copy.deepcopy(P_tmp)
             P_I = self.calculate_inverse(P_tmp)
-            linear = self.__check_linearity(P_tmp)
-            if(not linear):
-                P_I = []
         return P, P_I
 
     def p_box_multiplication(self, data, encrypt):

@@ -212,7 +212,7 @@ class Matrix:
 
         Returns
         -------
-        list of int
+        list of int or []
             the inverse of A_t
         """
         A = copy.deepcopy(A_t)
