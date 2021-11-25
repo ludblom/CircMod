@@ -155,6 +155,32 @@ class HiddenSum(Matrix):
                     return False
         return True
 
+    def change_key(self, key):
+        """
+        Change the M matrix for a new key.
+
+        Parameters
+        ----------
+        key : list of int
+
+        Returns
+        -------
+        None
+
+        Raise
+        -----
+        ValueError
+            if M is not invertable
+        """
+        if type(key) == str:
+            self.key = [int(i) for i in key]
+        else:
+            self.key = key
+        self.M, self.zero = self.create_M([0 for _ in range(N)])
+        self.M_inv = self.calculate_inverse(self.M)
+        if self.M_inv == []:
+            raise ValueError("The P and S box combination is not attackable.")
+
     def phi_pos_a(self, a, P_a):
         """
         Calculate Phi for indent a using ring.
