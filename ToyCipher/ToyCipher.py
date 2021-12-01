@@ -46,7 +46,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
     """
 
     # TODO: Initiate a parameter to make the cipher 100% attackable (generating attackable S and P boxes).
-    def __init__(self, block_len=3, rounds=1):
+    def __init__(self, block_len=3, rounds=1, num_of_gamma=1):
         """
         Init default parameters.
 
@@ -57,6 +57,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         rounds : int
             how many rounds the cipher has
         """
+        self.num_of_gamma = num_of_gamma
         self.block_len = block_len
         self.rounds = rounds
         super().__init__()
@@ -287,6 +288,13 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         # Convert the column len to octal representation
         self.block_len = len(self.P)
 
+    def __preform_splitted_substitution(self, data):
+        data_splitted = [data[x:x+int(self.block_len/self.num_of_gamma)] for x in range(0, self.block_len, int(self.block_len/self.num_of_gamma))]
+        data_tmp = []
+        for i in range(self.num_of_gamma):
+            data_tmp.append(self.preform_data_substitution(data_splitted[i], True, i))
+        return [d for sd in data_tmp for d in sd]
+
     def encrypt(self, data_t, key_t):
         """
         Encrypt data using the key.
@@ -327,7 +335,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
-            data = self.preform_data_substitution(data, True)
+            data = self.__preform_splitted_substitution(data)
             data = self.p_box_multiplication(data, True)
             key = self.new_key_round(key, True)
             data = self.xor_data_key(data, key)
@@ -378,7 +386,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         for _ in range(self.rounds):
             data = self.p_box_multiplication(data, False)
-            data = self.preform_data_substitution(data, False)
+            data = self.__preform_splitted_substitution(data)
             key = self.new_key_round(key, False)
             data = self.xor_data_key(data, key)
 

@@ -51,17 +51,24 @@ class SBox:
         tuple of S and S_I
             the encryption (S) and decryption (S_I) substitution box
         """
-        S = {}
-        S_I = {}
-        random_values = [i for i in range(2**block_len)]
-        sorted_values = [i for i in range(2**block_len)]
-        random.shuffle(random_values)
-        for i in range(2**block_len):
-            S[sorted_values[i]] = random_values[i]
-            S_I[random_values[i]] = sorted_values[i]
+        if block_len%self.num_of_gamma != 0:
+            raise ValueError("Num of gamma is not dividable with length of P.")
+
+        S = [{} for _ in range(self.num_of_gamma)]
+        S_I = [{} for _ in range(self.num_of_gamma)]
+
+        random_values = [[i for i in range(2**int(block_len/self.num_of_gamma))] for _ in range(self.num_of_gamma)]
+        sorted_values = [i for i in range(2**int(block_len/self.num_of_gamma))]
+        [random.shuffle(r) for r in random_values]
+
+        for i in range(self.num_of_gamma):
+            for j in range(2**int(block_len/self.num_of_gamma)):
+                S[i][sorted_values[j]] = random_values[i][j]
+                S_I[i][random_values[i][j]] = sorted_values[j]
+
         return S, S_I
 
-    def preform_data_substitution(self, data, encrypt):
+    def preform_data_substitution(self, data, encrypt, section):
         """
         Preform the substitution.
 
@@ -71,6 +78,8 @@ class SBox:
             the data to substitute
         encrypt : bool
             True if we are to encrypt, False if decryption
+        section : int
+            which S-box to use
 
         Returns
         -------
@@ -79,8 +88,8 @@ class SBox:
         length = len(data)
 
         if(encrypt):
-            data = self.S[self.binary_to_int(data)]
+            data = self.S[section][self.binary_to_int(data)]
         else:
-            data = self.S_I[self.binary_to_int(data)]
+            data = self.S_I[section][self.binary_to_int(data)]
 
         return self.int_to_binary(data, length)
