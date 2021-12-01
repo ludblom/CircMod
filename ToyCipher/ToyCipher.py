@@ -35,6 +35,8 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         Load the P box from file
     __load_s_box(orig_indent, content, box):
         Load the S and Key box from file
+    __preform_splitted_substitution(data, encryption):
+        Preform data substitution using multiple gamma
     save_cipher(file_name):
         Save the current cipher to a file in position file_name
     load_cipher(file_name):
@@ -199,6 +201,27 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         return i
 
+    def __preform_splitted_substitution(self, data, encryption):
+        """
+        Preform data substitution using n gamma.
+
+        Parameters
+        ----------
+        data : list of int
+            the data to preform the substitution on
+        encryption : bool
+            encryption or decryption
+
+        Returns
+        List of int
+            the data substituted
+        """
+        data_splitted = [data[x:x+int(self.block_len/self.num_of_gamma)] for x in range(0, self.block_len, int(self.block_len/self.num_of_gamma))]
+        data_tmp = []
+        for i in range(self.num_of_gamma):
+            data_tmp.append(self.preform_data_substitution(data_splitted[i], encryption, i))
+        return [d for sd in data_tmp for d in sd]
+
     def save_cipher(self, file_name, hard=False, only_P=False):
         """
         Save the current cipher to a text file.
@@ -288,13 +311,6 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         # Convert the column len to octal representation
         self.block_len = len(self.P)
 
-    def __preform_splitted_substitution(self, data):
-        data_splitted = [data[x:x+int(self.block_len/self.num_of_gamma)] for x in range(0, self.block_len, int(self.block_len/self.num_of_gamma))]
-        data_tmp = []
-        for i in range(self.num_of_gamma):
-            data_tmp.append(self.preform_data_substitution(data_splitted[i], True, i))
-        return [d for sd in data_tmp for d in sd]
-
     def encrypt(self, data_t, key_t):
         """
         Encrypt data using the key.
@@ -335,7 +351,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         data = self.xor_data_key(data, key)
 
         for _ in range(self.rounds):
-            data = self.__preform_splitted_substitution(data)
+            data = self.__preform_splitted_substitution(data, True)
             data = self.p_box_multiplication(data, True)
             key = self.new_key_round(key, True)
             data = self.xor_data_key(data, key)
@@ -386,7 +402,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         for _ in range(self.rounds):
             data = self.p_box_multiplication(data, False)
-            data = self.__preform_splitted_substitution(data)
+            data = self.__preform_splitted_substitution(data, False)
             key = self.new_key_round(key, False)
             data = self.xor_data_key(data, key)
 
