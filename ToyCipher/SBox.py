@@ -37,7 +37,7 @@ class SBox:
         self.S, self.S_I = self.substitution_box(self.block_len)
         super().__init__()
 
-    def substitution_box(self, block_len):
+    def substitution_box(self, block_len, S=None):
         """
         Create the substitution box.
 
@@ -51,22 +51,33 @@ class SBox:
         tuple of S and S_I
             the encryption (S) and decryption (S_I) substitution box
         """
-        if block_len%self.num_of_gamma != 0:
-            raise ValueError("Num of gamma is not dividable with length of P.")
+        if S == None:
+            if block_len%self.num_of_gamma != 0:
+                raise ValueError("Num of gamma is not dividable with length of P.")
 
-        S = [{} for _ in range(self.num_of_gamma)]
-        S_I = [{} for _ in range(self.num_of_gamma)]
+            S = [{} for _ in range(self.num_of_gamma)]
+            S_I = [{} for _ in range(self.num_of_gamma)]
 
-        random_values = [[i for i in range(2**int(block_len/self.num_of_gamma))] for _ in range(self.num_of_gamma)]
-        sorted_values = [i for i in range(2**int(block_len/self.num_of_gamma))]
-        [random.shuffle(r) for r in random_values]
+            random_values = [[i for i in range(2**int(block_len/self.num_of_gamma))] for _ in range(self.num_of_gamma)]
+            sorted_values = [i for i in range(2**int(block_len/self.num_of_gamma))]
+            [random.shuffle(r) for r in random_values]
 
-        for i in range(self.num_of_gamma):
-            for j in range(2**int(block_len/self.num_of_gamma)):
-                S[i][sorted_values[j]] = random_values[i][j]
-                S_I[i][random_values[i][j]] = sorted_values[j]
+            for i in range(self.num_of_gamma):
+                for j in range(2**int(block_len/self.num_of_gamma)):
+                    S[i][sorted_values[j]] = random_values[i][j]
+                    S_I[i][random_values[i][j]] = sorted_values[j]
 
-        return S, S_I
+            return S, S_I
+        else:
+            S_I = []
+
+            for s in S:
+                S_I.append({y:x for x,y in s.items()})
+
+            self.S = S
+            self.S_I = S_I
+
+            return S, S_I
 
     def preform_data_substitution(self, data, encrypt, section):
         """

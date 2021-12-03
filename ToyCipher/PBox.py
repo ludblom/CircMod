@@ -93,7 +93,6 @@ class PBox:
             if P_I == []:
                 raise ValueError("The P matrix given is non-linear.")
             else:
-                # TODO Not created yet potentially
                 self.P = P
                 self.P_I = P_I
 

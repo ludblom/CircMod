@@ -109,17 +109,18 @@ class HiddenSum(Matrix):
         Check S box attackability.
         """
         r = Operations(N=self.N, k=self.k)
-        for x in range(2**self.N):
-            for y in range(2**self.N):
-                xry = r.ring(x, y)
-                f_xry = self.t.S[xry]
+        for S in self.t.S:
+            for x in range(2**int(self.N/self.num_of_gamma)):
+                for y in range(2**int(self.N/self.num_of_gamma)):
+                    xry = r.ring(x, y)
+                    f_xry = S[xry]
 
-                fx = self.t.S[x]
-                fy = self.t.S[y]
-                fx_r_fy = r.ring(fx, fy)
+                    fx = S[x]
+                    fy = S[y]
+                    fx_r_fy = r.ring(fx, fy)
 
-                if f_xry != fx_r_fy:
-                    raise ValueError("S-box is not vulnerable.")
+                    if f_xry != fx_r_fy:
+                        raise ValueError("S-box is not vulnerable.")
 
     def __lambda_check(self):
         """
