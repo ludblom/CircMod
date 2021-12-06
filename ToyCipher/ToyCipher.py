@@ -10,6 +10,7 @@ from .Key import Key
 from pathlib import Path
 import copy
 import os
+import re
 
 
 class ToyCipher(Matrix, SBox, PBox, Key):
@@ -153,6 +154,10 @@ class ToyCipher(Matrix, SBox, PBox, Key):
                 i += 1
         except:
             pass
+
+        # Load the inverse boxes
+        self.P_I = self.calculate_inverse(self.P)
+
         return i
 
     def __load_s_box(self, orig_indent, content, box):
@@ -180,7 +185,7 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         i = 1
 
         if(box == "S"):
-            self.S = {}
+            S = {}
         else:
             self.K = {}
 
@@ -188,18 +193,21 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             while(content[i+orig_indent] != ''):
                 a, b = content[i+orig_indent].split(' ')
                 if(box == "S"):
-                    self.S[int(a)] = int(b)
+                    S[int(a)] = int(b)
                 else:
                     self.K[int(a)] = int(b)
                 i += 1
         except:
             pass
         if(box == "S"):
-            self.S_I = {v: k for k, v in self.S.items()}
+            S_I = {v: k for k, v in S.items()}
         else:
             self.K_I = {v: k for k, v in self.K.items()}
 
-        return i
+        if box == "K":
+            return i
+        else:
+            return i, S, S_I
 
     def __preform_splitted_substitution(self, data, encryption):
         """
@@ -295,18 +303,23 @@ class ToyCipher(Matrix, SBox, PBox, Key):
 
         # Exchange data in the boxes
         i = 0
+        S = []
+        S_I = []
+        s_m = re.compile("## S BOX \d+")
         while(i < len(content)):
             if(content[i] == "## P BOX"):
                 i += self.__load_p_box(i, content)
-            elif(content[i] == "## S BOX"):
-                i += self.__load_s_box(i, content, 'S')
+            elif(content[i] == "## S BOX" or s_m.match(content[i])):
+                i_t, s, s_i = self.__load_s_box(i, content, 'S')
+                i += i_t
+                S.append(s)
+                S_I.append(s_i)
+                self.S = S
+                self.S_I = S_I
             elif(content[i] == "## K BOX"):
                 i += self.__load_s_box(i, content, 'K')
             else:
                 i += 1
-
-        # Load the inverse boxes
-        self.P_I = self.calculate_inverse(self.P)
 
         # Convert the column len to octal representation
         self.block_len = len(self.P)
