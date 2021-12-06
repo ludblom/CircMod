@@ -110,8 +110,8 @@ class HiddenSum(Matrix):
         """
         r = Operations(N=self.N, k=self.k)
         for S in self.t.S:
-            for x in range(2**int(self.N/self.num_of_gamma)):
-                for y in range(2**int(self.N/self.num_of_gamma)):
+            for x in range(2**int(self.N/self.t.num_of_gamma)):
+                for y in range(2**int(self.N/self.t.num_of_gamma)):
                     xry = r.ring(x, y)
                     f_xry = S[xry]
 
