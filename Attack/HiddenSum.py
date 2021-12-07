@@ -78,7 +78,9 @@ class HiddenSum(Matrix):
             if M_inv == []:
                 raise ValueError("The P and S box combination is not attackable.")
         else:
-            self.M, self.zero = self.create_M([0 for _ in range(N)])
+            if type(key) == str:
+                self.key = [int(i) for i in key]
+            self.M, self.zero = self.create_M(self.key)
             self.M_inv = self.calculate_inverse(self.M)
             if self.M_inv == []:
                 raise ValueError("The P and S box combination is not attackable.")
@@ -172,7 +174,7 @@ class HiddenSum(Matrix):
             self.key = [int(i) for i in key]
         else:
             self.key = key
-        self.M, self.zero = self.create_M([0 for _ in range(N)])
+        self.M, self.zero = self.create_M(self.key)
         self.M_inv = self.calculate_inverse(self.M)
         if self.M_inv == []:
             raise ValueError("The P and S box combination is not attackable.")
@@ -315,22 +317,24 @@ class HiddenSum(Matrix):
         """
         if type(c) == int:
             c = self.int_to_binary(c, self.N)
+        if type(c) == str:
+            c = [int(i) for i in c]
         if type(k) == int:
-            c = self.int_to_binary(k, self.N)
+            k = self.int_to_binary(k, self.N)
+        if type(k) == str:
+            k = [int(i) for i in k]
 
         if k != None:
             M, zero = self.create_M(k)
             M_inv = self.calculate_inverse(M)
             if M_inv == []:
                 raise ValueError("M is not invertable.")
-
             c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
             c_t = self.xor(c_tilde, zero)
             m_tilde = self.matrix_mul_row_column(c_t, M_inv)
             m = self.tilde_inv[self.binary_to_int(m_tilde)]
         elif self.key != None:
             c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
-            print("c_tilde: {}".format(c_tilde))
             c_t = self.xor(c_tilde, self.zero)
             m_tilde = self.matrix_mul_row_column(c_t, self.M_inv)
             m = self.tilde_inv[self.binary_to_int(m_tilde)]
