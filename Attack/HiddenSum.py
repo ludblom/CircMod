@@ -3,8 +3,8 @@
 """Preform hidden sum attack."""
 
 from .Matrix import Matrix
-from ToyCipher.ToyCipher import ToyCipher
 from .Operations import Operations
+from ToyCipher.ToyCipher import ToyCipher
 
 import copy
 
@@ -32,12 +32,6 @@ class HiddenSum(Matrix):
         check S box attackability
     __lambda_check():
         make sure that lambda are in XOR and Ring
-    phi_pos_a(a, P_a):
-        determine Phi val at pos a substitution using ring
-    phi_pos_a_xor(a, P_a):
-        determine Phi val at pos a substitution using xor
-    phi_map(P):
-        calculate the Phi and Phi inverse map
     lambda_tilde(P):
         generate the lambda tilde matrix from P
     lambda_GL_ring(A_t):
@@ -71,11 +65,12 @@ class HiddenSum(Matrix):
         if t == None:
             raise ValueError("No ToyCipher defined.")
         else:
+            o = Operations(N=N, k=k)
             self.t = t
         self.N = N
         self.k = k
         self.key = key
-        self.tilde, self.tilde_inv = self.phi_map(t.P)
+        self.tilde, self.tilde_inv = o.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
         if key == None:
             M, zero = self.create_M([0 for _ in range(N)])
@@ -83,7 +78,9 @@ class HiddenSum(Matrix):
             if M_inv == []:
                 raise ValueError("The P and S box combination is not attackable.")
         else:
-            self.M, self.zero = self.create_M([0 for _ in range(N)])
+            if type(key) == str:
+                self.key = [int(i) for i in key]
+            self.M, self.zero = self.create_M(self.key)
             self.M_inv = self.calculate_inverse(self.M)
             if self.M_inv == []:
                 raise ValueError("The P and S box combination is not attackable.")
@@ -177,101 +174,10 @@ class HiddenSum(Matrix):
             self.key = [int(i) for i in key]
         else:
             self.key = key
-        self.M, self.zero = self.create_M([0 for _ in range(N)])
+        self.M, self.zero = self.create_M(self.key)
         self.M_inv = self.calculate_inverse(self.M)
         if self.M_inv == []:
             raise ValueError("The P and S box combination is not attackable.")
-
-    def phi_pos_a(self, a, P_a):
-        """
-        Calculate Phi for indent a using ring.
-
-        Parameters
-        ----------
-        a : int or list of int
-        P_a : list of int
-
-        Returns
-        -------
-        int
-            Phi on pos a using ring
-        """
-        r = Operations(N=self.N, k=self.k)
-        P = copy.deepcopy(P_a)
-        if type(a) == int:
-            a = self.int_to_binary(a, self.N)
-        for i in range(len(a)):
-            for j in range(len(P[0])):
-                P[i][j] = P[i][j]*a[i]
-        gamma = r.ring(self.binary_to_int(P[0]), self.binary_to_int(P[1]))
-        for i in range(2, len(P)):
-            gamma = r.ring(gamma, self.binary_to_int(P[i]))
-        return gamma
-
-    def phi_pos_a_xor(self, a, P_a):
-        """
-        Calculate Phi for indent a using XOR.
-
-        Parameters
-        ----------
-        a : int or list of int
-        P_a : list of int
-
-        Returns
-        -------
-        int
-            Phi at position a using XOR
-        """
-        P = copy.deepcopy(P_a)
-        if type(a) == int:
-            a = self.int_to_binary(a, self.N)
-        for i in range(len(a)):
-            for j in range(len(P[0])):
-                P[i][j] = P[i][j]*a[i]
-        gamma = self.xor(P[0], P[1])
-        for i in range(2, len(P)):
-            gamma = self.xor(gamma, P[i])
-        return self.binary_to_int(gamma)
-
-    def phi_map(self, P):
-        """
-        Calculate the Phi and Phi inverse map.
-
-        Parameters
-        ----------
-        P : list of list of int
-            The P box
-
-        Returns
-        -------
-        tuple of list of int
-            Phi and Phi inverse
-        """
-        # TODO Only for 3x3 matrix atm
-        r = []
-        x = []
-        phi = [0 for i in range(2**self.N)]
-        phi_inv = [i for i in range(2**self.N)]
-
-        for i in range(2**self.N):
-            ring = self.phi_pos_a(i, P)
-            xor = self.phi_pos_a_xor(i, P)
-            r.append(ring)
-            x.append(xor)
-            if ring != xor:
-                phi[ring] = xor
-            else:
-                phi[ring] = ring
-
-        pos = []
-        for i in range(2**self.N):
-            if r[i] != x[i]:
-                pos.append(i)
-
-        phi_inv[pos[0]] = pos[1]
-        phi_inv[pos[1]] = pos[0]
-
-        return phi, phi_inv
 
     def lambda_tilde(self, P):
         """
@@ -411,15 +317,18 @@ class HiddenSum(Matrix):
         """
         if type(c) == int:
             c = self.int_to_binary(c, self.N)
+        if type(c) == str:
+            c = [int(i) for i in c]
         if type(k) == int:
-            c = self.int_to_binary(k, self.N)
+            k = self.int_to_binary(k, self.N)
+        if type(k) == str:
+            k = [int(i) for i in k]
 
         if k != None:
             M, zero = self.create_M(k)
             M_inv = self.calculate_inverse(M)
             if M_inv == []:
                 raise ValueError("M is not invertable.")
-
             c_tilde = self.int_to_binary(self.tilde[self.binary_to_int(c)], self.N)
             c_t = self.xor(c_tilde, zero)
             m_tilde = self.matrix_mul_row_column(c_t, M_inv)
