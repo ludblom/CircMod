@@ -265,10 +265,11 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             f.write('\n')
 
             if not only_P:
-                f.write('## S BOX\n')
-                for key in self.S:
-                    f.write('{} {}\n'.format(key, self.S[key]))
-                f.write('\n')
+                for i in range(len(self.S)):
+                    f.write('## S BOX {}\n'.format(i))
+                    for key in self.S[i]:
+                        f.write('{} {}\n'.format(key, self.S[i][key]))
+                    f.write('\n')
 
                 f.write('## K BOX\n')
                 for key in self.K:
