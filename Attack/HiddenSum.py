@@ -72,23 +72,23 @@ class HiddenSum(Matrix):
         self.key = key
         self.tilde, self.tilde_inv = o.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
+        self.__is_attackable()
         if key == None:
             M, zero = self.create_M([0 for _ in range(N)])
             M_inv = self.calculate_inverse(M)
             if M_inv == []:
-                raise ValueError("The P and S box combination is not attackable.")
+                raise ValueError("The P and S box combination is not attackable, inverse of M undefined.")
         else:
             if type(key) == str:
                 self.key = [int(i) for i in key]
             self.M, self.zero = self.create_M(self.key)
             self.M_inv = self.calculate_inverse(self.M)
             if self.M_inv == []:
-                raise ValueError("The P and S box combination is not attackable.")
+                raise ValueError("The P and S box combination is not attackable, inverse of M undefined.")
 
         if not self.__lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
 
-        self.__is_attackable()
         super().__init__()
 
     def __is_attackable(self):

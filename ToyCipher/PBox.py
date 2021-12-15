@@ -95,6 +95,7 @@ class PBox:
             else:
                 self.P = P
                 self.P_I = P_I
+            return P, P_I
 
         P_I = []
         while P_I == []:
