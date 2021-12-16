@@ -110,6 +110,7 @@ class HiddenSum(Matrix):
         """
         Check S box attackability.
         """
+        # TODO: Operations have to be configured with the correct N and k for the gamma!
         r = Operations(N=self.N, k=self.k)
         for S in self.t.S:
             for x in range(2**int(self.N/self.t.num_of_gamma)):
