@@ -8,6 +8,7 @@ from .PBox import PBox
 from .Key import Key
 
 from pathlib import Path
+import random
 import copy
 import os
 import re
@@ -421,3 +422,38 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             data = self.xor_data_key(data, key)
 
         return data
+
+    def find_attackable_lambda(self, N, k):
+        if N < k:
+            raise ValueError('K cannot be greater or equal to N.')
+        elif k <= 0:
+            raise ValueError('K cannot be less than or equal to 0.')
+
+        while True:
+            M = [[0 for _ in range(N)] for _ in range(N)]
+
+            l_Mi = []
+            while l_Mi == []:
+                l_M = [[random.randint(0, 1) for _ in range(N-k)] for _ in range(N-k)]
+                l_Mi = self.calculate_inverse(l_M)
+
+            r_Mi = []
+            while r_Mi == []:
+                r_M = [[random.randint(0, 1) for _ in range(k)] for _ in range(k)]
+                r_Mi = self.calculate_inverse(r_M)
+
+            right = [[random.randint(0, 1) for _ in range(k)] for _ in range(N-k)]
+
+            for i in range(N):
+                for j in range(N):
+                    if i < N-k and j < N-k:
+                        M[i][j] = l_M[i][j]
+                    elif i < N-k and j >= N-k:
+                        M[i][j] = right[i][j-(N-k)]
+                    elif i >= N-k and j >= N-k:
+                        M[i][j] = r_M[i-(N-k)][j-(N-k)]
+                    else:
+                        continue
+            if self.calculate_inverse(M) != []:
+                break
+        return M

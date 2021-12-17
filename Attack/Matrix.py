@@ -67,13 +67,15 @@ class Matrix:
 
         Parameters
         ----------
-        b : list of int
-            number of binary
+        b : list of int or str
+            binary number
 
         Returns
         -------
         int
         """
+        if type(b) == str:
+            b = [int(i) for i in b]
         i = 0
         p = 0
         for j in b:
