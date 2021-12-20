@@ -47,6 +47,8 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         encrypt the data
     decrypt(data_t, key_t):
         decrypt the data
+    find_attackable_lambda(N, k):
+        faster way to find attackable lambda
     """
 
     # TODO: Initiate a parameter to make the cipher 100% attackable (generating attackable S and P boxes).
@@ -424,6 +426,25 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         return data
 
     def find_attackable_lambda(self, N, k):
+        """
+        Faster way to find attackable lambda.
+
+        Parameters
+        ----------
+        N : int
+            total size of the matrix
+        k : int
+            size of the k part
+
+        Returns
+        -------
+        list of list of int
+
+        Raises
+        ------
+        ValueError
+            If the N and k combination is not correct
+        """
         if N < k:
             raise ValueError('K cannot be greater or equal to N.')
         elif k <= 0:
