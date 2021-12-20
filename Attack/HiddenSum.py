@@ -7,6 +7,7 @@ from .Operations import Operations
 from ToyCipher.ToyCipher import ToyCipher
 
 import copy
+import random
 
 
 class HiddenSum(Matrix):
@@ -32,6 +33,8 @@ class HiddenSum(Matrix):
         check S box attackability
     __lambda_check():
         make sure that lambda are in XOR and Ring
+    change_key(key):
+        update the M matrix for a new key
     lambda_tilde(P):
         generate the lambda tilde matrix from P
     lambda_GL_ring(A_t):
@@ -111,7 +114,7 @@ class HiddenSum(Matrix):
         Check S box attackability.
         """
         # TODO: Operations have to be configured with the correct N and k for the gamma!
-        r = Operations(N=self.N, k=self.k)
+        r = Operations(N=3, k=1) #(N=self.N, k=self.k)
         for S in self.t.S:
             for x in range(2**int(self.N/self.t.num_of_gamma)):
                 for y in range(2**int(self.N/self.t.num_of_gamma)):
