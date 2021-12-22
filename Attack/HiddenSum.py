@@ -24,6 +24,8 @@ class HiddenSum(Matrix):
         size of the modifying matrix in x direction
     t : Class
         a ToyCipher class
+    key : list of int
+        the key used
 
     Methods
     -------
