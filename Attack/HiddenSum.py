@@ -65,14 +65,16 @@ class HiddenSum(Matrix):
         ValueError
             if no ToyCipher class is defined
         """
-        if t == None:
-            raise ValueError("No ToyCipher defined.")
-        else:
-            o = Operations(N=N, k=k)
-            self.t = t
         self.N = N
         self.k = k
         self.key = key
+
+        if t == None:
+            return
+        else:
+            o = Operations(N=N, k=k)
+            self.t = t
+
         self.tilde, self.tilde_inv = o.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
 
