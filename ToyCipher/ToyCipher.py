@@ -373,6 +373,11 @@ class ToyCipher(Matrix, SBox, PBox, Key):
             key = self.new_key_round(key, True)
             data = self.xor_data_key(data, key)
 
+        data = self.__preform_splitted_substitution(data, True)
+
+        key = self.new_key_round(key, True)
+        data = self.xor_data_key(data, key)
+
         return data
 
     def decrypt(self, data_t, key_t):
@@ -412,8 +417,13 @@ class ToyCipher(Matrix, SBox, PBox, Key):
         if(type(key) == str):
             key = [int(i) for i in key]
 
-        for _ in range(self.rounds):
+        for _ in range(self.rounds+1):
             key = self.new_key_round(key, True)
+
+        data = self.xor_data_key(data, key)
+        key = self.new_key_round(key, False)
+
+        data = self.__preform_splitted_substitution(data, False)
 
         data = self.xor_data_key(data, key)
 
