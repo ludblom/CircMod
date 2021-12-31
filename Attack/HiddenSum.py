@@ -33,7 +33,7 @@ class HiddenSum(Matrix):
         check that S and P boxes are attackable
     __check_S_attackability():
         check S box attackability
-    __lambda_check():
+    lambda_check():
         make sure that lambda are in XOR and Ring
     change_key(key):
         update the M matrix for a new key
@@ -108,7 +108,7 @@ class HiddenSum(Matrix):
         if (lam == [] or lam_r == []):
             raise ValueError("P-box is not vulnerable.")
 
-        if not self.__lambda_check():
+        if not self.lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
 
         self.__check_S_attackability()
@@ -132,21 +132,25 @@ class HiddenSum(Matrix):
                     if f_xry != fx_r_fy:
                         raise ValueError("S-box is not vulnerable.")
 
-    def __lambda_check(self):
+    def lambda_check(self, P=None):
         """
         Make sure that lambda are in XOR and Ring.
         """
+
+        if P == None:
+            P = self.t.P
+
         r = Operations(N=self.N, k=self.k)
         for x in range(2**self.N):
             for y in range(2**self.N):
                 # (x + y)\lam = x\lam + y\lam
                 # (x + y)\lam
                 x_p_y = self.int_to_binary(x^y, self.N)
-                x_p_y_l = self.binary_to_int(self.matrix_mul_row_column(x_p_y, self.t.P))
+                x_p_y_l = self.binary_to_int(self.matrix_mul_row_column(x_p_y, P))
 
                 # x\lam + y\lam
-                x_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), self.t.P))
-                y_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), self.t.P))
+                x_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), P))
+                y_l = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), P))
                 xl_p_yl = x_l^y_l
 
                 if xl_p_yl != x_p_y_l:
@@ -155,11 +159,11 @@ class HiddenSum(Matrix):
                 # (x o y)\lam = x\lam o y\lam
                 # (x o y)\lam
                 x_o_y = self.int_to_binary(r.ring(x, y), self.N)
-                x_o_y_l = self.binary_to_int(self.matrix_mul_row_column(x_o_y, self.t.P))
+                x_o_y_l = self.binary_to_int(self.matrix_mul_row_column(x_o_y, P))
 
                 # x\lam o y\lam
-                x_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), self.t.P))
-                y_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), self.t.P))
+                x_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(x, self.N), P))
+                y_lo = self.binary_to_int(self.matrix_mul_row_column(self.int_to_binary(y, self.N), P))
                 xl_o_yl = r.ring(x_lo, y_lo)
 
                 if x_o_y_l != xl_o_yl:

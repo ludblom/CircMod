@@ -18,10 +18,14 @@ class PBox:
 
     Methods
     -------
+    __verify_validity(P):
+        Verify that P is a valid gamma in terms of content and size.
     permutation_box(num_of_octals):
         Create the encryption (P) and decryption (P_I) permutation matrix
     p_box_multiplication(data, encrypt):
         Preform row multiplication
+    find_attackable_lambda(N, k):
+        faster way to find attackable lambda
     """
 
     def __init__(self):
@@ -126,3 +130,58 @@ class PBox:
         else:
             res_data = self.matrix_mul_row_column(data, self.P_I)
         return res_data
+
+    def find_attackable_lambda(self, N, k):
+        """
+        Faster way to find attackable lambda.
+
+        Parameters
+        ----------
+        N : int
+            total size of the matrix
+        k : int
+            size of the k part
+
+        Returns
+        -------
+        list of list of int
+
+        Raises
+        ------
+        ValueError
+            If the N and k combination is not correct
+        """
+        if N < k:
+            raise ValueError('K cannot be greater or equal to N.')
+        elif k <= 0:
+            raise ValueError('K cannot be less than or equal to 0.')
+
+        while True:
+            M = [[0 for _ in range(N)] for _ in range(N)]
+
+            l_Mi = []
+            while l_Mi == []:
+                l_M = [[random.randint(0, 1) for _ in range(N-k)] for _ in range(N-k)]
+                l_Mi = self.calculate_inverse(l_M)
+
+            r_Mi = []
+            while r_Mi == []:
+                r_M = [[random.randint(0, 1) for _ in range(k)] for _ in range(k)]
+                r_Mi = self.calculate_inverse(r_M)
+
+            right = [[random.randint(0, 1) for _ in range(k)] for _ in range(N-k)]
+
+            for i in range(N):
+                for j in range(N):
+                    if i < N-k and j < N-k:
+                        M[i][j] = l_M[i][j]
+                    elif i < N-k and j >= N-k:
+                        M[i][j] = right[i][j-(N-k)]
+                    elif i >= N-k and j >= N-k:
+                        M[i][j] = r_M[i-(N-k)][j-(N-k)]
+                    else:
+                        continue
+            M_i = self.calculate_inverse(M)
+            if M_i != []:
+                break
+        return M, M_i
