@@ -31,7 +31,7 @@ class HiddenSum(Matrix):
     -------
     __is_attackable():
         check that S and P boxes are attackable
-    __check_S_attackability():
+    check_S_attackability():
         check S box attackability
     lambda_check():
         make sure that lambda are in XOR and Ring
@@ -70,12 +70,12 @@ class HiddenSum(Matrix):
         self.N = N
         self.k = k
         self.key = key
+        self.t = t
 
         if t == None:
             return
         else:
             o = Operations(N=N, k=k)
-            self.t = t
 
         self.tilde, self.tilde_inv = o.phi_map(t.P)
         self.P_tilde = self.lambda_tilde(t.P)
@@ -111,26 +111,41 @@ class HiddenSum(Matrix):
         if not self.lambda_check():
             raise ValueError("Lambda not in XOR or Circ.")
 
-        self.__check_S_attackability()
+        self.check_S_attackability()
 
-    def __check_S_attackability(self):
+    def check_S_attackability(self, S=None, N=None, k=None, num_of_gamma=None):
         """
         Check S box attackability.
         """
         # TODO: Operations have to be configured with the correct N and k for the gamma!
-        r = Operations(N=3, k=1) #(N=self.N, k=self.k)
-        for S in self.t.S:
-            for x in range(2**int(self.N/self.t.num_of_gamma)):
-                for y in range(2**int(self.N/self.t.num_of_gamma)):
-                    xry = r.ring(x, y)
-                    f_xry = S[xry]
+        if S == None:
+            r = Operations(N=3, k=1) #(N=self.N, k=self.k)
+            for S_i in self.t.S:
+                for x in range(2**int(self.N/self.t.num_of_gamma)):
+                    for y in range(2**int(self.N/self.t.num_of_gamma)):
+                        xry = r.ring(x, y)
+                        f_xry = S_i[xry]
 
-                    fx = S[x]
-                    fy = S[y]
-                    fx_r_fy = r.ring(fx, fy)
+                        fx = S_i[x]
+                        fy = S_i[y]
+                        fx_r_fy = r.ring(fx, fy)
 
-                    if f_xry != fx_r_fy:
-                        raise ValueError("S-box is not vulnerable.")
+                        if f_xry != fx_r_fy:
+                            raise ValueError("S-box is not vulnerable.")
+        else:
+            r = Operations(N=N, k=k) #(N=self.N, k=self.k)
+            for S_i in S:
+                for x in range(2**int(N/num_of_gamma)):
+                    for y in range(2**int(N/num_of_gamma)):
+                        xry = r.ring(x, y)
+                        f_xry = S_i[xry]
+
+                        fx = S_i[x]
+                        fy = S_i[y]
+                        fx_r_fy = r.ring(fx, fy)
+
+                        if f_xry != fx_r_fy:
+                            raise ValueError("S-box is not vulnerable.")
 
     def lambda_check(self, P=None):
         """
